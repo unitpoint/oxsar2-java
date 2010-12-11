@@ -712,8 +712,8 @@ public class Units
 					// Explosion chance, if the unit's shell is 30% or
 					// higher destroyed
 
-					int explodingChance = (int) Math.round(100 - underFireUnit.shell * 100.0 / underFireUnits.shell);
-					if(explodingChance >= 99 || Assault.randIntRange(1, 100) <= explodingChance)
+					double explodingChance = Math.round(100 - underFireUnit.shell * 100.0 / underFireUnits.shell);
+					if(Assault.randDouble(0.1, 100) <= explodingChance)
 					{
 						// Ships explodes due to perforated shell
 						// Ship will be removed at the end of a turn.

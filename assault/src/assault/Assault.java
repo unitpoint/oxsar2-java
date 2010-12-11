@@ -935,8 +935,8 @@ public class Assault
 						unitsList.add(units);
 					}
 				}
-				int maxPercent = Math.min(90, deathStarsNumber * 10);
-				if(randIntRange(1, 100) <= maxPercent)
+				int targetDestroyChance = clampVal(deathStarsNumber * 10, 0, 90);
+				if(randDouble(0.1, 100) <= targetDestroyChance)
 				{
 					targetDestroyed = true;
 					
@@ -963,7 +963,7 @@ public class Assault
 					int destroyed = 0;
 					for(int i = 0; i < units.getQuantity(); i++)
 					{
-						if(randIntRange(1, 100) <= (100 - maxPercent))
+						if(randDouble(0.1, 100) > targetDestroyChance)
 						{
 							destroyed++;
 						}
@@ -1837,6 +1837,7 @@ public class Assault
 
 	public static void updateAssault(String s, boolean addMessage)
 	{
+		/*
 		addMessage = true;
 		if (false) // && addMessage) {
 		{
@@ -1858,8 +1859,8 @@ public class Assault
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 		}
+		*/
 	}
 
 	public static void updateAssault(String s)
