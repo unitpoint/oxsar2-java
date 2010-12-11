@@ -906,6 +906,7 @@ public class Assault
 			updateAssault("[DESTROY] try to destroy "+targetBuildingName+" "+targetBuildingLevel);
 			targetDestroyBuf = new StringBuffer();
 			
+			int deathStarsDestroyedNumber = 0;
 			boolean isBuildingExist = party.getDefendersNumber() > 0;
 			if(isBuildingExist && !isBattleSimulation)
 			{
@@ -957,7 +958,6 @@ public class Assault
 					planetMetal += targetBuildingMetal;
 					planetSilicon += targetBuildingSilicon;
 				}
-				int deathStarsDestroyedNumber = 0;
 				for(Units units : unitsList)
 				{
 					int destroyed = 0;
@@ -974,12 +974,6 @@ public class Assault
 						deathStarsDestroyedNumber += destroyed;						
 					}
 				}
-				if(deathStarsDestroyedNumber > 0)
-				{
-					targetDestroyBuf.append("{lang}DESTROY_MISSION_DEATH_STARS_DESTROYED{/lang}: ");
-					targetDestroyBuf.append(decFormatter.format(targetBuildingMetal));
-					targetDestroyBuf.append("<br />\n");
-				}
 			}
 			if(!targetDestroyed)
 			{
@@ -989,6 +983,12 @@ public class Assault
 				{
 					targetDestroyBuf.append(" " + targetBuildingLevel);
 				}
+				targetDestroyBuf.append("<br />\n");
+			}
+			if(deathStarsDestroyedNumber > 0)
+			{
+				targetDestroyBuf.append("{lang}DESTROY_MISSION_DEATH_STARS_DESTROYED{/lang}: ");
+				targetDestroyBuf.append(decFormatter.format(deathStarsDestroyedNumber));
 				targetDestroyBuf.append("<br />\n");
 			}
 		}
