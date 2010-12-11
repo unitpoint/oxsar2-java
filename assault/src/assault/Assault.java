@@ -987,9 +987,9 @@ public class Assault
 			}
 			if(deathStarsDestroyedNumber > 0)
 			{
-				targetDestroyBuf.append("{lang}DESTROY_MISSION_DEATH_STARS_DESTROYED{/lang}: ");
+				targetDestroyBuf.append("{embedded[DESTROY_MISSION_DEATH_STARS_DESTROYED]}");
 				targetDestroyBuf.append(decFormatter.format(deathStarsDestroyedNumber));
-				targetDestroyBuf.append("<br />\n");
+				targetDestroyBuf.append("{/embedded}<br />\n");
 			}
 		}
 		
