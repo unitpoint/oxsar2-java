@@ -200,7 +200,7 @@ public class Assault
 	// public final static long USE_MAX_INT_VALUE = 2000000000;
 	public final static int MOON_PERCENT_PER_RES = 200000;
 	public final static int MOON_EXP_START_CHANCE = 5;
-	public final static int MAX_MOON_CHANCE = 20;
+	public final static int MOON_MAX_CHANCE = 20;
 	public static int moonChance = 0;
 	public static boolean moon = false;
 	public static boolean ismoon = false;
@@ -819,7 +819,7 @@ public class Assault
 			// startBattleAtterPower - мощность огн€ атакующего в первом раунде
 			// startBattleDefenderPower - мощность огн€ оборон€ющегос€ в первом раунде
 			
-			double battleTurnsCoefficient = (double)battleTurnsNumber / BATTLE_MAX_TURNS;
+			double battleTurnsCoefficient = ((double)battleTurnsNumber / BATTLE_MAX_TURNS); // * Math.pow(battleTurnsNumber, 1.1);
 			
 			double atterExperience = (Math.atan(startBattleDefenderPower / startBattleAtterPower * 1.5 - 1.5)+1)*0.4*3*battleTurnsCoefficient + 1;
 			double defenderExperience = (Math.atan(startBattleAtterPower / startBattleDefenderPower * 1.5 - 1.5)+1)*0.4*3*battleTurnsCoefficient + 1;
@@ -936,7 +936,7 @@ public class Assault
 						unitsList.add(units);
 					}
 				}
-				int targetDestroyChance = clampVal(deathStarsNumber * 10, 0, 90);
+				double targetDestroyChance = clampVal(10 * Math.pow(deathStarsNumber, 0.8), 0, 90);
 				if(randDouble(0.1, 100) <= targetDestroyChance)
 				{
 					targetDestroyed = true;
@@ -1267,23 +1267,23 @@ public class Assault
 		// Get chance of moon appearance
 		moonChance = 0;
 		boolean USE_MOON_ARTEFACT_STYLE = true;
-		if((!ismoon || USE_MOON_ARTEFACT_STYLE) && !isRocketAttack
-			&& atterBattleExperience >= MOON_EXP_START_CHANCE 
-			&& defenderBattleExperience >= MOON_EXP_START_CHANCE
+		if((!ismoon || USE_MOON_ARTEFACT_STYLE) 
+			&& !isRocketAttack
+			&& planetid != 0
 			&& !attackerFleetsExplode
 			&& !(targetMoon && targetDestroyed)
 			)
 		{
 			if(USE_MOON_ARTEFACT_STYLE)
 			{
-				moonChance = Math.min(atterBattleExperience, defenderBattleExperience);
-				moonChance = (int) (clampVal(moonChance, 0, MAX_MOON_CHANCE) + Assault.randDouble(-2, 2));
-				if (moonChance > 0)
+				moonChance = (int) Math.round(Math.pow(Math.min(atterBattleExperience, defenderBattleExperience), 0.8));
+				moonChance = (int) clampVal(moonChance, 0, 20); // + Assault.randDouble(-2, 2));
+				if (moonChance >= 5)
 				{
 					assaultReportBuf.append("<br />\n{embedded[MOON_ARTEFACT_CHANCE]}"
 							+ decFormatter.format(moonChance)
 							+ "{/embedded}<br />\n");
-					if (randIntRange(1, 100) <= moonChance) {
+					if (randDouble(0.1, 100) <= moonChance) {
 						moon = true;
 						assaultReportBuf.append("<b>{lang}MOON_ARTEFACT_APPEARED{/lang}</b><br />\n");
 					}
@@ -1293,20 +1293,20 @@ public class Assault
 					}
 				}
 			}
-			else
+			else if(atterBattleExperience >= MOON_EXP_START_CHANCE && defenderBattleExperience >= MOON_EXP_START_CHANCE)
 			{
 				moonChance = (int)clampVal((debrisMetal + debrisSilicon) / MOON_PERCENT_PER_RES 
-						+ Assault.randDouble(-2, 2), 0, MAX_MOON_CHANCE);
+						+ Assault.randDouble(-2, 2), 0, MOON_MAX_CHANCE);
 				if (moonChance > 0)
 				{
 					assaultReportBuf.append("{embedded[MOON_CHANCE]}"
 							+ decFormatter.format(moonChance)
 							+ "{/embedded}<br />\n");
-					if (randIntRange(1, 100) <= moonChance) {
+					if (randInt(1, 100) <= moonChance) {
 						moon = true;
 						assaultReportBuf.append("<strong>{lang}MOON{/lang}</strong><br />\n");
 	
-						double capacity = MOON_PERCENT_PER_RES * MAX_MOON_CHANCE;
+						double capacity = MOON_PERCENT_PER_RES * MOON_MAX_CHANCE;
 						if ((debrisMetal + debrisSilicon) > capacity) {
 							while (capacity > MIN_FREE_CAPACITY) {
 								double res, cnt;
@@ -1914,7 +1914,7 @@ public class Assault
 		// return i;
 	}
 
-	public static int randIntRange(int min, int max)
+	public static int randInt(int min, int max)
 	{
 		int size = max - min;
 		return size > 0 ? min + random.nextInt(size+1) : min;
@@ -1927,7 +1927,6 @@ public class Assault
 
 	public static long randExclude(long maxExclude)
 	{
-		// return maxExclude > 0 ? Math.round(randDouble(0, maxExclude-1)) : maxExclude;
 		return maxExclude > 0 ? Math.abs(random.nextLong()) % maxExclude : maxExclude;
 	}
 

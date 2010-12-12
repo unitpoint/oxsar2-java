@@ -792,20 +792,20 @@ public class Units
 		if(quantity > 0)
 		{
 			int percent;
-			if(Assault.randIntRange(0, 10) == 0)
+			if(Assault.randInt(0, 10) == 0)
 			{
-				if(Assault.randIntRange(0, 10) == 0)
+				if(Assault.randInt(0, 10) == 0)
 				{
-					percent = Assault.randIntRange(95, 99);
+					percent = Assault.randInt(95, 99);
 				}
 				else
 				{
-					percent = Assault.randIntRange(65, 90);
+					percent = Assault.randInt(65, 90);
 				}
 			}
 			else
 			{
-				percent = Assault.randIntRange(15, 45); 
+				percent = Assault.randInt(15, 45); 
 			}
 			addQuantity(quantity, percent * shell / 100);		
 			totalGrasped += quantity;

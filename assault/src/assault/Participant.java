@@ -658,7 +658,7 @@ public class Participant {
 							&& units.getTotalDestroyed() == 1) {
 						repair = Assault.randExclude(3) == 0 ? 1 : 0;
 					} else if (units.getStartBattleQuantity() <= 5) {
-						repair = Assault.randIntRange(0, units
+						repair = Assault.randInt(0, units
 								.getTotalDestroyed() - 1);
 					} else {
 						defenseRepairMin = 0;

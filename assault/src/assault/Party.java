@@ -149,7 +149,7 @@ public class Party
 			{
 				units = getRandomFleetUnits();
 			}
-			else if(Assault.randIntRange(0, 1) == 0)
+			else if(Assault.randInt(0, 1) == 0)
 			{
 				units = getRandomDefenseUnits();
 			}
@@ -453,7 +453,7 @@ public class Party
 					continue;
 				}
 				Units newTargetUnits = null;
-				if(Assault.randIntRange(1, 100) <= 2)
+				if(Assault.randInt(1, 100) <= 2)
 				{
 					newTargetUnits = defenderSide.getPrimaryTargetUnitsFor(unitid, primaryTargetUnitid, false);
 				}
