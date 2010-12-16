@@ -601,7 +601,7 @@ public class Units
 		if(underFireUnits.curQuantity > 0 && (damages[0] > 0 || damages[1] > 0 || damages[2] > 0))
 		{
 			int ballistics = getBallisticsLevel();
-			int masking = getMaskingLevel();
+			int masking = underFireUnits.getMaskingLevel();
 			
 			// int useQuantity = (int) (curQuantity + (quantity - curQuantity) * attackMissFactor);
 			int virtualQuantity = Math.max(underFireUnits.curQuantity, (int)Math.ceil(underFireUnits.quantity * (1 + (masking - ballistics) * 2 / 10.0)));
