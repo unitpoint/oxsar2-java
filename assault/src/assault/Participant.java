@@ -450,12 +450,12 @@ public class Participant {
 					continue;
 				}
 				int structure = rs.getInt("basic_metal") + rs.getInt("basic_silicon");
-				int unitAttack = (int) Math.round(rs.getInt("attack") * (1 + attackLevel / 10.0));
-				int unitShield = (int) Math.round(rs.getInt("shield") * (1 + shieldLevel / 10.0));
-				int unitShell = (int) Math.round(structure * (1 + shellLevel / 10.0) / 10.0);
+				int unitAttack = (int) Math.round(rs.getInt("attack") * (1 + getAttackLevel() / 10.0));
+				int unitShield = (int) Math.round(rs.getInt("shield") * (1 + getShieldLevel() / 10.0));
+				int unitShell = (int) Math.round(structure * (1 + getShellLevel() / 10.0) / 10.0);
 				int unitFront = rs.getInt("front");
-				int unitBallistics = rs.getInt("ballistics") + ballisticsLevel;
-				int unitMasking = rs.getInt("masking") + maskingLevel;
+				int unitBallistics = rs.getInt("ballistics") + getBallisticsLevel();
+				int unitMasking = rs.getInt("masking") + getMaskingLevel();
 				
 				int attack0 = (int) Math.ceil(unitAttack * attackFactors[0]); 
 				int attack1 = (int) Math.ceil(unitAttack * attackFactors[1]); 
