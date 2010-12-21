@@ -148,14 +148,28 @@ public class Participant {
 			int addBallisticsLevel, int addMaskingLevel, 
 			int addLaserLevel, int addIonLevel, int addPlasmaLevel)
 	{
-		this.addAttackLevel = addAttackLevel;
-		this.addShieldLevel = addShieldLevel;
-		this.addShellLevel = addShellLevel;
-		this.addBallisticsLevel = addBallisticsLevel;
-		this.addMaskingLevel = addMaskingLevel;
-		this.addLaserLevel = addLaserLevel;
-		this.addIonLevel = addIonLevel;
-		this.addPlasmaLevel = addPlasmaLevel;
+		if(this.isAliens)
+		{
+			this.attackLevel += addAttackLevel;
+			this.shieldLevel += addShieldLevel;
+			this.shellLevel += addShellLevel;
+			this.ballisticsLevel += addBallisticsLevel;
+			this.maskingLevel += addMaskingLevel;
+			this.laserLevel += addLaserLevel;
+			this.ionLevel += addIonLevel;
+			this.plasmaLevel += addPlasmaLevel;
+		}
+		else
+		{
+			this.addAttackLevel = addAttackLevel;
+			this.addShieldLevel = addShieldLevel;
+			this.addShellLevel = addShellLevel;
+			this.addBallisticsLevel = addBallisticsLevel;
+			this.addMaskingLevel = addMaskingLevel;
+			this.addLaserLevel = addLaserLevel;
+			this.addIonLevel = addIonLevel;
+			this.addPlasmaLevel = addPlasmaLevel;
+		}
 	}
 
 	public int getPosition() {
