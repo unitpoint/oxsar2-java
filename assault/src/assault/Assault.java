@@ -1276,8 +1276,16 @@ public class Assault
 		{
 			if(USE_MOON_ARTEFACT_STYLE)
 			{
-				moonChance = (int) Math.round(Math.pow(Math.min(atterBattleExperience, defenderBattleExperience), 0.8));
-				moonChance = (int) clampVal(moonChance, 0, 20); // + Assault.randDouble(-2, 2));
+				moonChance = 0;
+
+				int effectExperience = Math.min(atterBattleExperience, defenderBattleExperience); 
+				if(effectExperience >= MOON_EXP_START_CHANCE)
+				{
+					int experienceMoonChance = (int) Math.round(Math.pow(effectExperience, 0.8));
+					int debrisMoonChance = (int) ((debrisMetal + debrisSilicon) / MOON_PERCENT_PER_RES);
+					moonChance = clampVal(Math.min(experienceMoonChance, debrisMoonChance), 0, MOON_MAX_CHANCE);
+				}				
+				
 				if (moonChance >= 5)
 				{
 					assaultReportBuf.append("<br />\n{embedded[MOON_ARTEFACT_CHANCE]}"
@@ -1291,6 +1299,10 @@ public class Assault
 					{
 						assaultReportBuf.append("{lang}MOON_ARTEFACT_NOT_APPEARED{/lang}<br />\n");
 					}
+				}
+				else
+				{
+					moonChance = 0;
 				}
 			}
 			else if(atterBattleExperience >= MOON_EXP_START_CHANCE && defenderBattleExperience >= MOON_EXP_START_CHANCE)
