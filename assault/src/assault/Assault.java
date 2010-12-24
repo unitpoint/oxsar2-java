@@ -95,7 +95,7 @@ public class Assault
 	
 	static final int BATTLE_MAX_TURNS = 6;
 	
-	static final double [] ADV_TECH_FACTOR = { 1, 2, 3 };
+	static final double [] ADV_TECH_FACTOR = { 1, 1.1, 1.2 };
 	static final double [][] ADV_TECH_MATRIX =
 								{
 									{ 1.00, 1.25, 0.75 },
