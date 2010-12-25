@@ -661,12 +661,15 @@ public class Assault
 				updateAssault("[defender turn] "
 						+ participant.getUsername());
 
+				String coords = "";
+				if (!participant.isAliens()) {
+					coords = "[" + participant.getGalaxy() + ":"
+							+ participant.getSystem() + ":"
+							+ participant.getPosition() + "]"
+							+ (participant.getIsMoon() ? "{lang}LOON_POST{/lang}" : "");
+				}
 				assaultReportBuf.append("{lang}DEFENDER{/lang} "
-						+ "{user["+participant.getUserid()+"]}"+participant.getUsername() + "{/user} ["
-						+ participant.getGalaxy() + ":"
-						+ participant.getSystem() + ":"
-						+ participant.getPosition() + "]"
-						+ (participant.getIsMoon() ? "{lang}LOON_POST{/lang}" : "")
+						+ "{user["+participant.getUserid()+"]}"+participant.getUsername() + "{/user} " + coords
 						+ "<br />\n");
 				
 				printArtefacts(participant);
@@ -1100,7 +1103,7 @@ public class Assault
 						+ participant.getPosition() + "]"
 						+ (participant.getIsMoon() ? "{lang}LOON_POST{/lang}" : "");
 			}
-			assaultReportBuf.append("{lang}ATTACKER{/lang} "
+			assaultReportBuf.append("{lang}DEFENDER{/lang} "
 					+ "{user["+participant.getUserid()+"]}"+participant.getUsername() + "{/user} " + coords
 					+ "<br />\n");
 
