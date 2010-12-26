@@ -98,9 +98,9 @@ public class Assault
 	static final double [] ADV_TECH_FACTOR = { 1, 1.1, 1.2 };
 	static final double [][] ADV_TECH_MATRIX =
 								{
-									{ 0.75, 1.25, 0.75 },
-									{ 0.75, 1.00, 1.50 },
-									{ 1.25, 0.50, 1.00 },
+									{ 0.75, 1.90, 0.10 },
+									{ 0.10, 1.00, 2.00 },
+									{ 1.90, 0.00, 1.00 },
 								};
 	
 	public static final int MIN_FREE_CAPACITY = 0;
