@@ -98,7 +98,7 @@ public class Assault
 	static final double [] ADV_TECH_FACTOR = { 1, 1.1, 1.2 };
 	static final double [][] ADV_TECH_MATRIX =
 								{
-									{ 1.00, 1.25, 0.75 },
+									{ 0.75, 1.25, 0.75 },
 									{ 0.75, 1.00, 1.50 },
 									{ 1.25, 0.50, 1.00 },
 								};
