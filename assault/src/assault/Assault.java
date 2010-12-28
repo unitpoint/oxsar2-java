@@ -199,7 +199,7 @@ public class Assault
 	
 	// public final static long USE_MAX_INT_VALUE = 2000000000;
 	public final static int MOON_PERCENT_PER_RES = 200000;
-	public final static int MOON_GUARANTEED_PERCENT_PER_RES = 1000000;
+	public final static int MOON_GUARANTEED_PERCENT_PER_RES = 10000000;
 	public final static int MOON_EXP_START_CHANCE = 5;
 	public final static int MOON_START_CHANCE = 5;
 	public final static int MOON_MAX_CHANCE = 20;
