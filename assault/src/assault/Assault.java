@@ -1283,21 +1283,22 @@ public class Assault
 			{
 				moonChance = 0;
 
-				int moonStartChance = MOON_START_CHANCE;
 				int effectExperience = Math.min(atterBattleExperience, defenderBattleExperience); 
 				if(effectExperience >= MOON_EXP_START_CHANCE)
 				{
 					int experienceMoonChance = (int) Math.round(Math.pow(effectExperience, 0.8));
 					int debrisMoonChance = (int) ((debrisMetal + debrisSilicon) / MOON_PERCENT_PER_RES);
-					int guaranteedDebrisMoonChance = (int) ((debrisMetal + debrisSilicon) / MOON_GUARANTEED_PERCENT_PER_RES);					
 					moonChance = Math.min(experienceMoonChance, debrisMoonChance);
-					moonChance = Math.max(moonChance, guaranteedDebrisMoonChance);
-					moonChance = clampVal(moonChance, 0, MOON_MAX_CHANCE);
-					if(guaranteedDebrisMoonChance > 0 && moonStartChance > guaranteedDebrisMoonChance)
-					{
-						moonStartChance = guaranteedDebrisMoonChance;
-					}
 				}				
+
+				int moonStartChance = MOON_START_CHANCE;
+				int guaranteedDebrisMoonChance = (int) ((debrisMetal + debrisSilicon) / MOON_GUARANTEED_PERCENT_PER_RES);					
+				moonChance = Math.max(moonChance, guaranteedDebrisMoonChance);
+				moonChance = clampVal(moonChance, 0, MOON_MAX_CHANCE);
+				if(guaranteedDebrisMoonChance > 0 && moonStartChance > guaranteedDebrisMoonChance)
+				{
+					moonStartChance = guaranteedDebrisMoonChance;
+				}
 				
 				if (moonChance >= moonStartChance)
 				{
