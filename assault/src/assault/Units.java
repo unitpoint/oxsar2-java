@@ -428,17 +428,20 @@ public class Units
 			attackPowerArtefacts = Assault.defenderAttackPowerArtefacts;
 		}
 
+		double shellBonusPower = 1;
+		double shieldBonusPower = 1;
 		if(shellPowerArtefacts != 0)
 		{
-			shell = (int) Math.round(shell * Math.max(0.1, 1 + 0.1 * shellPowerArtefacts));
+			shellBonusPower = Math.max(0.1, 1 + 0.1 * shellPowerArtefacts);
+			shell = (int) Math.round(shell * shellBonusPower);
 		}
 		if(shieldPowerArtefacts != 0)
 		{
-			double bonusPower = Math.max(0.1, 1 + 0.1 * shieldPowerArtefacts);
-			baseShield = (int) Math.round(baseShield * bonusPower);
-			shield0 = (int) Math.round(shield0 * bonusPower);
-			shield1 = (int) Math.round(shield1 * bonusPower);
-			shield2 = (int) Math.round(shield2 * bonusPower);
+			shieldBonusPower = Math.max(0.1, 1 + 0.1 * shieldPowerArtefacts);
+			baseShield = (int) Math.round(baseShield * shieldBonusPower);
+			shield0 = (int) Math.round(shield0 * shieldBonusPower);
+			shield1 = (int) Math.round(shield1 * shieldBonusPower);
+			shield2 = (int) Math.round(shield2 * shieldBonusPower);
 		}
 		if(attackPowerArtefacts != 0)
 		{
@@ -447,6 +450,17 @@ public class Units
 			attack0 = (int) Math.round(attack0 * bonusPower);
 			attack1 = (int) Math.round(attack1 * bonusPower);
 			attack2 = (int) Math.round(attack2 * bonusPower);
+		}
+		
+		if(shellPowerArtefacts != 0 || shieldPowerArtefacts != 0)
+		{
+			for(Unit unit : curDamagedUnits)
+			{
+				unit.shell = (int) Math.round(unit.shell * shellBonusPower);
+				unit.shield0 = (int) Math.round(unit.shield0 * shieldBonusPower);
+				unit.shield1 = (int) Math.round(unit.shield1 * shieldBonusPower);
+				unit.shield2 = (int) Math.round(unit.shield2 * shieldBonusPower);
+			}
 		}
 	}
 	
