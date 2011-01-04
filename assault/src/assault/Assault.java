@@ -824,7 +824,7 @@ public class Assault
 			// startBattleAtterPower - мощность огн€ атакующего в первом раунде
 			// startBattleDefenderPower - мощность огн€ оборон€ющегос€ в первом раунде
 			
-			double battleTurnsCoefficient = ((double)battleTurnsNumber / BATTLE_MAX_TURNS); // * Math.pow(battleTurnsNumber, 1.1);
+			double battleTurnsCoefficient = Math.pow(battleTurnsNumber, 1.1) / BATTLE_MAX_TURNS;
 			
 			double atterExperience = (Math.atan(startBattleDefenderPower / startBattleAtterPower * 1.5 - 1.5)+1)*0.4*3*battleTurnsCoefficient + 1;
 			double defenderExperience = (Math.atan(startBattleAtterPower / startBattleDefenderPower * 1.5 - 1.5)+1)*0.4*3*battleTurnsCoefficient + 1;
@@ -841,12 +841,17 @@ public class Assault
 
 			{
 				atterExperience *= 1.5;
-				defenderExperience *= 1.5;
+				defenderExperience *= 1.7;
 			}
 			
 			// масштаб битвы
 			double battlePower = Math.sqrt(startBattleAtterPower * startBattleDefenderPower) / 1000000;
 			double battlePowerCoefficient = (Math.atan(battlePower*10*0.2-1.6)+1)*0.4*19+1;
+			
+			if(planetid == 0)
+			{
+				battlePowerCoefficient *= 0.5;
+			}
 			
 			atterExperience *= battlePowerCoefficient;
 			defenderExperience *= battlePowerCoefficient;
