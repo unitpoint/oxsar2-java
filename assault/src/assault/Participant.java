@@ -904,10 +904,11 @@ public class Participant {
 			}
 
 			try {
-				sql = "UPDATE " + prefix + "user SET " + " points = points - '"
-						+ lostPoints + "' " + ", u_points = u_points - '"
-						+ lostPoints + "' " + ", u_count = u_count - '"
-						+ lostUnits + "' " + " WHERE userid = '" + userid + "'";
+				sql = "UPDATE " + prefix + "user SET " 
+						+ " points = GREATEST(0, points - '" + lostPoints + "') " 
+						+ ", u_points = GREATEST(0, u_points - '" + lostPoints + "') " 
+						+ ", u_count = GREATEST(0, u_count - '" + lostUnits + "') " 
+						+ " WHERE userid = '" + userid + "'";
 				stmt.executeUpdate(sql);
 			} catch (SQLException e) {
 				System.err.println(sql);
