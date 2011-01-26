@@ -424,7 +424,7 @@ public class Assault
 				"pp.planetid, pp.preloaded, pp.consumption, pp.target_unitid, " +
 				"pp.add_gun_tech, pp.add_shield_tech, pp.add_shell_tech, " +
 				"pp.add_ballistics_tech, pp.add_masking_tech, " +
-				"0 as add_laser_tech, 0 as add_ion_tech, 0 as add_plasma_tech, " + // todo: add fields to table 
+				"pp.add_laser_tech, pp.add_ion_tech, pp.add_plasma_tech, " + 
 				"IFNULL(g.galaxy, gm.galaxy) as galaxy, " +
 				"IFNULL(g.system, gm.system) as system, " +
 				"IFNULL(g.position, gm.position) as position, "
