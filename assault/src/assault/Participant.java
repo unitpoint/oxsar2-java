@@ -381,43 +381,6 @@ public class Participant {
 					break;
 				}
 			}
-			if(Assault.isBattleAdvanced)
-			{
-				int [] techList = { 
-						(int) Math.round(laserLevel * Assault.ADV_TECH_FACTOR[0]), 
-						(int) Math.round(ionLevel * Assault.ADV_TECH_FACTOR[1]), 
-						(int) Math.round(plasmaLevel * Assault.ADV_TECH_FACTOR[2]) };
-				int techMax = Math.max(techList[0], Math.max(techList[1], techList[2]));
-				int [] techPick = { 0, 0, 0 };
-				for(int i = 2; i >= 0; i--)
-				{
-					if(techList[i] == techMax)
-					{
-						techPick[i] = techList[i];
-						break;
-					}
-				}
-				double techSum = techPick[0] + techPick[1] + techPick[2];
-				if(techSum > 0)
-				{
-					attackFactors[0] = techPick[0] / techSum + techList[0] / 100.0; 
-					attackFactors[1] = techPick[1] / techSum + techList[1] / 100.0; 
-					attackFactors[2] = techPick[2] / techSum + techList[2] / 100.0; 
-				}
-				else
-				{
-					attackFactors[0] = 1.0 / 3 + techList[0] / 100.0; 
-					attackFactors[1] = 1.0 / 3 + techList[1] / 100.0; 
-					attackFactors[2] = 1.0 / 3 + techList[2] / 100.0; 
-				}
-				
-				for(int i = 0; i < 3; i++)
-				{
-					shieldFactors[i] = attackFactors[0] * Assault.ADV_TECH_MATRIX[i][0] 
-                                         + attackFactors[1] * Assault.ADV_TECH_MATRIX[i][1]
-                                         + attackFactors[2] * Assault.ADV_TECH_MATRIX[i][2];					                                                                 	
-				}
-			}
 			// attackMissFactor = Math.pow(0.9, attackAccuracyLevel);
 			Assault.updateAssault("[new Participant] type: " + type
 					+ ", userid: " + userid + ", attack lvl: " + attackLevel
@@ -430,6 +393,43 @@ public class Participant {
 	}
 
 	public void loadShips() {
+		if(Assault.isBattleAdvanced)
+		{
+			int [] techList = { 
+					(int) Math.round(getLaserLevel() * Assault.ADV_TECH_FACTOR[0]), 
+					(int) Math.round(getIonLevel() * Assault.ADV_TECH_FACTOR[1]), 
+					(int) Math.round(getPlasmaLevel() * Assault.ADV_TECH_FACTOR[2]) };
+			int techMax = Math.max(techList[0], Math.max(techList[1], techList[2]));
+			int [] techPick = { 0, 0, 0 };
+			for(int i = 2; i >= 0; i--)
+			{
+				if(techList[i] == techMax)
+				{
+					techPick[i] = techList[i];
+					break;
+				}
+			}
+			double techSum = techPick[0] + techPick[1] + techPick[2];
+			if(techSum > 0)
+			{
+				attackFactors[0] = techPick[0] / techSum + techList[0] / 100.0; 
+				attackFactors[1] = techPick[1] / techSum + techList[1] / 100.0; 
+				attackFactors[2] = techPick[2] / techSum + techList[2] / 100.0; 
+			}
+			else
+			{
+				attackFactors[0] = 1.0 / 3 + techList[0] / 100.0; 
+				attackFactors[1] = 1.0 / 3 + techList[1] / 100.0; 
+				attackFactors[2] = 1.0 / 3 + techList[2] / 100.0; 
+			}
+			
+			for(int i = 0; i < 3; i++)
+			{
+				shieldFactors[i] = attackFactors[0] * Assault.ADV_TECH_MATRIX[i][0] 
+                                     + attackFactors[1] * Assault.ADV_TECH_MATRIX[i][1]
+                                     + attackFactors[2] * Assault.ADV_TECH_MATRIX[i][2];					                                                                 	
+			}
+		}
 		ResultSet rs = null;
 		try {
 			String prefix = Assault.getTablePrefix();
