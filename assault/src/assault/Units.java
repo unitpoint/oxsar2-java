@@ -904,7 +904,7 @@ public class Units
 							+ ", damaged = '" + getDamaged() + "' "
 							+ ", grasped = '" + totalGrasped + "' "
 							+ ", shell_percent = '" + getDamagedShellPercent() + "' "
-							+ " WHERE assaultid = '" + Assault.assaultid + "' AND userid = '" + userid + "' "
+							+ " WHERE assaultid = '" + Assault.assaultid + "' " // AND userid = '" + userid + "' "
 							+ " AND unitid = '" + unitid + "' AND participantid = '"+participant.getParticipantId()+"'";
 						Assault.updateAssault("[sql] "+sql, true);
 						stmt.executeUpdate(sql);
@@ -915,7 +915,7 @@ public class Units
 							+ " (assaultid, userid, unitid, participantid, mode, quantity, damaged, shell_percent, grasped, org_quantity, org_damaged, org_shell_percent) "
 							+ " values("
 							+ "'"+Assault.assaultid+"'"
-							+ " , '"+userid+"'"
+							+ " , " + (userid != 0 ? "'"+userid+"'" : "NULL")
 							+ " , '"+unitid+"'"
 							+ " , '"+participant.getParticipantId()+"'"
 							+ " , '"+participant.getType()+"'"
