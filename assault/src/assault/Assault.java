@@ -113,6 +113,7 @@ public class Assault
 	public static String dbpasswd = "";
 	public static String tablePrefix = "na_";
 	public static int assaultid = 0;
+	public static int moonAllowType = 0;
 	public static boolean isBattleAdvanced = false;
 	public static boolean isBattleSimulation = false;
 	public static boolean isRocketAttack = false;
@@ -360,7 +361,7 @@ public class Assault
 			String sql ="SELECT a.time, a.accomplished " 
 				+ ", a.target_moon, a.target_buildingid, a.building_level "
 				+ ", a.building_metal, a.building_silicon, a.building_hydrogen " 
-				+ ", a.advanced_system "
+				+ ", a.advanced_system, a.moon_allow_type "
 				+ ", b.name as building_name, p.planetid "
 				+ ", p.metal, p.silicon, p.hydrogen, p.ismoon, p.diameter"
 				// "g.moonid"
@@ -388,6 +389,7 @@ public class Assault
 				planetDiameter = rs.getInt("diameter");
 				ismoon = rs.getInt("ismoon") == 1; // || rs.getInt("moonid") > 0) {
 				isBattleAdvanced = rs.getInt("advanced_system") == 1;
+				moonAllowType = rs.getInt("moon_allow_type");
 
 				targetMoon = ismoon && rs.getInt("target_moon") == 1;
 				if(!targetMoon)
@@ -1307,16 +1309,29 @@ public class Assault
 				
 				if (moonChance >= moonStartChance)
 				{
-					assaultReportBuf.append("<br />\n{embedded[MOON_ARTEFACT_CHANCE]}"
-							+ decFormatter.format(moonChance)
-							+ "{/embedded}<br />\n");
-					if (randDouble(0.1, 100) <= moonChance) {
-						moon = true;
-						assaultReportBuf.append("<b>{lang}MOON_ARTEFACT_APPEARED{/lang}</b><br />\n");
+					if(moonAllowType == 2)
+					{
+						assaultReportBuf.append("<b>{lang}MOON_ARTEFACT_CHANCE_NONE{/lang}</b><br />\n");
 					}
 					else
 					{
-						assaultReportBuf.append("{lang}MOON_ARTEFACT_NOT_APPEARED{/lang}<br />\n");
+						String langStrId = "MOON_ARTEFACT_CHANCE";
+						if(moonAllowType == 1)
+						{
+							moonChance = Math.max(moonChance/3, 1);
+							langStrId = "MOON_ARTEFACT_CHANCE_LOW";
+						}
+						assaultReportBuf.append("<br />\n{embedded["+langStrId+"]}"
+								+ decFormatter.format(moonChance)
+								+ "{/embedded}<br />\n");
+						if (randDouble(0.1, 100) <= moonChance) {
+							moon = true;
+							assaultReportBuf.append("<b>{lang}MOON_ARTEFACT_APPEARED{/lang}</b><br />\n");
+						}
+						else
+						{
+							assaultReportBuf.append("{lang}MOON_ARTEFACT_NOT_APPEARED{/lang}<br />\n");
+						}
 					}
 				}
 				else
