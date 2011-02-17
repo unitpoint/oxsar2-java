@@ -1311,7 +1311,8 @@ public class Assault
 				{
 					if(moonAllowType == 2)
 					{
-						assaultReportBuf.append("<b>{lang}MOON_ARTEFACT_CHANCE_NONE{/lang}</b><br />\n");
+						moonChance = 0;
+						assaultReportBuf.append("<br />\n{lang}MOON_ARTEFACT_CHANCE_NONE{/lang}<br />\n");
 					}
 					else
 					{
