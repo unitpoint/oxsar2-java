@@ -91,6 +91,8 @@ public class Assault
 	static final int UNIT_TYPE_DEFENSE = 4;
 	static final int UNIT_TYPE_ARTEFACT = 6;
 	
+	static final int RES_UPDATE_ATTACKER = 24;
+	
 	static final boolean USE_OGAME_RAPIDFIRE_STYLE = false;
 	
 	static final int BATTLE_MAX_TURNS = 6;
@@ -1835,13 +1837,26 @@ public class Assault
 		// Subtract haul from planet
 		if (assaultResult == 1) {
 			sql = "UPDATE " + tablePrefix
-					+ "planet SET metal = metal + '" + (targetBuildingMetal - haulMetal)
-					+ "', silicon = silicon + '" + (targetBuildingSilicon - haulSilicon)
-					+ "', hydrogen = hydrogen + '" + (targetBuildingHydrogen - haulHydrogen)
-					+ "' WHERE planetid = '" + planetid + "'";
+					+ "planet SET metal = GREATEST(0, metal + '" + (targetBuildingMetal - haulMetal)
+					+ "'), silicon = GREATEST(0, silicon + '" + (targetBuildingSilicon - haulSilicon)
+					+ "'), hydrogen = GREATEST(0, hydrogen + '" + (targetBuildingHydrogen - haulHydrogen)
+					+ "'), last = UNIX_TIMESTAMP(NOW())"
+					+ " WHERE planetid = '" + planetid + "'";
 			updateAssault("[finish] Subtract haul from planet, sql: " + sql);
 			try {
 				stmt.executeUpdate(sql);
+				
+				sql = "INSERT INTO " + tablePrefix +"res_log " +
+						" (type, planetid, userid, metal, silicon, hydrogen, result_metal, result_silicon, result_hydrogen, ownerid)" +
+						" SELECT "+RES_UPDATE_ATTACKER+", planetid, userid, " +
+								"'"+(targetBuildingMetal - haulMetal)+"', " +
+								"'"+(targetBuildingSilicon - haulSilicon)+"', " +
+								"'"+(targetBuildingHydrogen - haulHydrogen)+"', " +
+								"metal, silicon, hydrogen, '"+assaultid+"' " +
+						" FROM " + tablePrefix +"planet " +
+						" WHERE planetid = '" + planetid + "'";
+				stmt.executeUpdate(sql);		
+				
 			} catch (SQLException e) {
 				System.err.println(sql);
 				e.printStackTrace();
