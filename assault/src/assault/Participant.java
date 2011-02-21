@@ -313,6 +313,11 @@ public class Participant {
 	public double getLostPoints() {
 		return lostPoints;
 	}
+	
+	public int getLostUnits()
+	{
+		return lostUnits;
+	}
 
 	public Participant(int userid, int type, String username) {
 		this.userid = userid;

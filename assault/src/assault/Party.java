@@ -285,6 +285,16 @@ public class Party
 				participant.finish();
 			}
 		}
+		
+		public int getLostUnits()
+		{
+			int lostUnits = 0;
+			for(Participant participant : participants)
+			{
+				lostUnits += participant.getLostUnits();
+			}
+			return lostUnits;
+		}
 	}
 	
 	private PartySide attacker = new PartySide();
@@ -320,6 +330,16 @@ public class Party
 	public int getDefendersNumber()
 	{
 		return defender.participants.size();
+	}
+	
+	public int getAtterLostUnits()
+	{
+		return attacker.getLostUnits();
+	}
+	
+	public int getDefenderLostUnits()
+	{
+		return defender.getLostUnits();
 	}
 	
 	public Participant getRandomAtter()

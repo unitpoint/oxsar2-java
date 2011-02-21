@@ -1298,6 +1298,11 @@ public class Assault
 					int experienceMoonChance = (int) Math.round(Math.pow(effectExperience, 0.8));
 					int debrisMoonChance = (int) ((debrisMetal + debrisSilicon) / MOON_PERCENT_PER_RES);
 					moonChance = Math.min(experienceMoonChance, debrisMoonChance);
+					
+					int attackerLostUnits = party.getAtterLostUnits();
+					int defenderLostUnits = party.getDefenderLostUnits();
+					int lostUnits = Math.min(attackerLostUnits, defenderLostUnits);
+					moonChance = Math.min(moonChance, lostUnits); 
 				}				
 
 				int moonStartChance = MOON_START_CHANCE;
