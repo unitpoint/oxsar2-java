@@ -777,6 +777,8 @@ public class Participant {
 						capacity -= res;
 						haulMetal += res;
 						availMetal -= res;
+						Assault.planetMetal -= res;
+						
 					}
 					if (availSilicon > 0) {
 						h = availHydrogen > 0 ? 1 : 0;
@@ -785,12 +787,14 @@ public class Participant {
 						capacity -= res;
 						haulSilicon += res;
 						availSilicon -= res;
+						Assault.planetSilicon -= res;
 					}
 					if (availHydrogen > 0) {
 						res = Math.min(availHydrogen, capacity);
 						capacity -= res;
 						haulHydrogen += res;
 						availHydrogen -= res;
+						Assault.planetHydrogen -= res;
 					}
 
 					/*
@@ -804,9 +808,15 @@ public class Participant {
 				}
 			} else {
 				capacity = 0;
+				
 				haulMetal += availMetal;
+				Assault.planetMetal -= availMetal;
+				
 				haulSilicon += availSilicon;
+				Assault.planetSilicon -= availSilicon;
+				
 				haulHydrogen += availHydrogen;
+				Assault.planetHydrogen -= availHydrogen;
 			}
 		}
 		return capacity > Assault.MIN_FREE_CAPACITY;
