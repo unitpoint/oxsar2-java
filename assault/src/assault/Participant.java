@@ -752,11 +752,9 @@ public class Participant {
 	public boolean addHaul(int partsNumber) {
 		double capacity = getFreeCapacity();
 		if (capacity > Assault.MIN_FREE_CAPACITY) {
-			double availMetal = Math.ceil(Assault.planetMetal / partsNumber);
-			double availSilicon = Math
-					.ceil(Assault.planetSilicon / partsNumber);
-			double availHydrogen = Math.ceil(Assault.planetHydrogen
-					/ partsNumber);
+			double availMetal = Math.ceil( Math.max(0, (Assault.planetMetal - Assault.haulMetal) / partsNumber) );
+			double availSilicon = Math.ceil( Math.max(0, (Assault.planetSilicon - Assault.haulSilicon) / partsNumber) );
+			double availHydrogen = Math.ceil( Math.max(0, (Assault.planetHydrogen - Assault.haulHydrogen) / partsNumber) );
 
 			/*
 			 * Assault.updateAssault("[Participant::finish] BEGIN " +
@@ -777,8 +775,8 @@ public class Participant {
 						capacity -= res;
 						haulMetal += res;
 						availMetal -= res;
-						Assault.planetMetal -= res;
-						
+						// Assault.planetMetal -= res;
+						Assault.haulMetal += res;
 					}
 					if (availSilicon > 0) {
 						h = availHydrogen > 0 ? 1 : 0;
@@ -787,14 +785,16 @@ public class Participant {
 						capacity -= res;
 						haulSilicon += res;
 						availSilicon -= res;
-						Assault.planetSilicon -= res;
+						// Assault.planetSilicon -= res;
+						Assault.haulSilicon += res;
 					}
 					if (availHydrogen > 0) {
 						res = Math.min(availHydrogen, capacity);
 						capacity -= res;
 						haulHydrogen += res;
 						availHydrogen -= res;
-						Assault.planetHydrogen -= res;
+						// Assault.planetHydrogen -= res;
+						Assault.haulHydrogen += res;
 					}
 
 					/*
@@ -810,13 +810,17 @@ public class Participant {
 				capacity = 0;
 				
 				haulMetal += availMetal;
-				Assault.planetMetal -= availMetal;
+				// Assault.planetMetal -= availMetal;
 				
 				haulSilicon += availSilicon;
-				Assault.planetSilicon -= availSilicon;
+				// Assault.planetSilicon -= availSilicon;
 				
 				haulHydrogen += availHydrogen;
-				Assault.planetHydrogen -= availHydrogen;
+				// Assault.planetHydrogen -= availHydrogen;
+				
+				Assault.haulMetal += availMetal;
+				Assault.haulSilicon += availSilicon;
+				Assault.haulHydrogen += availHydrogen;
 			}
 		}
 		return capacity > Assault.MIN_FREE_CAPACITY;
@@ -843,15 +847,14 @@ public class Participant {
 		{
 			// haulMetal = Math.floor(haulMetal); haulSilicon =
 			// Math.floor(haulSilicon); haulHydrogen = Math.floor(haulHydrogen);
-			Assault.haulMetal += haulMetal;
-			Assault.haulSilicon += haulSilicon;
-			Assault.haulHydrogen += haulHydrogen;
+			// Assault.haulMetal += haulMetal;
+			// Assault.haulSilicon += haulSilicon;
+			// Assault.haulHydrogen += haulHydrogen;
 
 			sql = "UPDATE " + prefix + "assaultparticipant SET "
 					+ " haul_metal = '" + Assault.clampDbVal(haulMetal) + "', "
-					+ " haul_silicon = '" + Assault.clampDbVal(haulSilicon)
-					+ "', " + " haul_hydrogen = '"
-					+ Assault.clampDbVal(haulHydrogen) + "' "
+					+ " haul_silicon = '" + Assault.clampDbVal(haulSilicon)	+ "', " 
+					+ " haul_hydrogen = '" + Assault.clampDbVal(haulHydrogen) + "' "
 					+ " WHERE participantid = '" + participantid
 					+ "' AND assaultid = '" + Assault.assaultid
 					+ "' AND userid = '" + userid + "'";
