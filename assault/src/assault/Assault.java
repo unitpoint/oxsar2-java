@@ -385,9 +385,15 @@ public class Assault
 				// isRocketAttack = rocketAttackPrimaryTarget > 0;
 				battleTime = rs.getInt("time"); // Assault time
 				planetid = rs.getInt("planetid");
-				planetMetal = rs.getDouble("metal") / 2; // available haul
-				planetSilicon = rs.getDouble("silicon") / 2; // available haul
-				planetHydrogen = rs.getDouble("hydrogen") / 2; // available haul
+				if(!isBattleSimulation){
+					planetMetal = rs.getDouble("metal") / 2; // available haul
+					planetSilicon = rs.getDouble("silicon") / 2; // available haul
+					planetHydrogen = rs.getDouble("hydrogen") / 2; // available haul
+				}else{
+					planetMetal = 0;
+					planetSilicon = 0;
+					planetHydrogen = 0;
+				}
 				planetDiameter = rs.getInt("diameter");
 				ismoon = rs.getInt("ismoon") == 1; // || rs.getInt("moonid") > 0) {
 				isBattleAdvanced = rs.getInt("advanced_system") == 1;
