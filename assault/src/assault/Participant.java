@@ -751,79 +751,86 @@ public class Participant {
 
 	public boolean addHaul(int partsNumber) {
 		double capacity = getFreeCapacity();
-		if (capacity > Assault.MIN_FREE_CAPACITY) {
-			double availMetal = Math.ceil( Math.max(0, (Assault.planetMetal - Assault.haulMetal) / partsNumber) );
-			double availSilicon = Math.ceil( Math.max(0, (Assault.planetSilicon - Assault.haulSilicon) / partsNumber) );
-			double availHydrogen = Math.ceil( Math.max(0, (Assault.planetHydrogen - Assault.haulHydrogen) / partsNumber) );
-
-			/*
-			 * Assault.updateAssault("[Participant::finish] BEGIN " +
-			 * ", partid: " + this.getParticipantId() +
-			 * ", availMetal: "+availMetal + ", availSilicon: "+availSilicon +
-			 * ", availHydrogen: "+availHydrogen + ", capacity: "+capacity,
-			 * true);
-			 */
-
-			if ((availMetal + availSilicon + availHydrogen) > capacity) {
-				while (capacity > Assault.MIN_FREE_CAPACITY) {
-					double res, s, h, cnt;
-					if (availMetal > 0) {
-						s = availSilicon > 0 ? 1 : 0;
-						h = availHydrogen > 0 ? 1 : 0;
-						cnt = 1 + s + h;
-						res = Math.min(availMetal, Math.ceil(capacity / cnt));
-						capacity -= res;
-						haulMetal += res;
-						availMetal -= res;
-						// Assault.planetMetal -= res;
-						Assault.haulMetal += res;
-					}
-					if (availSilicon > 0) {
-						h = availHydrogen > 0 ? 1 : 0;
-						cnt = 1 + h;
-						res = Math.min(availSilicon, Math.ceil(capacity / cnt));
-						capacity -= res;
-						haulSilicon += res;
-						availSilicon -= res;
-						// Assault.planetSilicon -= res;
-						Assault.haulSilicon += res;
-					}
-					if (availHydrogen > 0) {
-						res = Math.min(availHydrogen, capacity);
-						capacity -= res;
-						haulHydrogen += res;
-						availHydrogen -= res;
-						// Assault.planetHydrogen -= res;
-						Assault.haulHydrogen += res;
-					}
-
-					/*
-					 * Assault.updateAssault("[Participant::finish] end step " +
-					 * ", partid: " + this.getParticipantId() +
-					 * ", availMetal: "+availMetal +
-					 * ", availSilicon: "+availSilicon +
-					 * ", availHydrogen: "+availHydrogen +
-					 * ", capacity: "+capacity, true);
-					 */
-				}
-			} else {
-				capacity = 0;
-				
-				haulMetal += availMetal;
-				// Assault.planetMetal -= availMetal;
-				
-				haulSilicon += availSilicon;
-				// Assault.planetSilicon -= availSilicon;
-				
-				haulHydrogen += availHydrogen;
-				// Assault.planetHydrogen -= availHydrogen;
-				
-				Assault.haulMetal += availMetal;
-				Assault.haulSilicon += availSilicon;
-				Assault.haulHydrogen += availHydrogen;
-			}
+		if (capacity <= Assault.MIN_FREE_CAPACITY) {
+			return false;
 		}
-		return capacity > Assault.MIN_FREE_CAPACITY;
+		
+		double availMetal = Math.ceil( Math.max(0, (Assault.planetMetal - Assault.haulMetal) / partsNumber) );
+		double availSilicon = Math.ceil( Math.max(0, (Assault.planetSilicon - Assault.haulSilicon) / partsNumber) );
+		double availHydrogen = Math.ceil( Math.max(0, (Assault.planetHydrogen - Assault.haulHydrogen) / partsNumber) );
+		
+		if (availMetal == 0 && availSilicon == 0 && availHydrogen == 0) {
+			return false;
+		}
+
+		/*
+		 * Assault.updateAssault("[Participant::finish] BEGIN " +
+		 * ", partid: " + this.getParticipantId() +
+		 * ", availMetal: "+availMetal + ", availSilicon: "+availSilicon +
+		 * ", availHydrogen: "+availHydrogen + ", capacity: "+capacity,
+		 * true);
+		 */
+
+		if ((availMetal + availSilicon + availHydrogen) > capacity) {
+			while (capacity > Assault.MIN_FREE_CAPACITY) {
+				double res, s, h, cnt;
+				if (availMetal > 0) {
+					s = availSilicon > 0 ? 1 : 0;
+					h = availHydrogen > 0 ? 1 : 0;
+					cnt = 1 + s + h;
+					res = Math.min(availMetal, Math.ceil(capacity / cnt));
+					capacity -= res;
+					haulMetal += res;
+					availMetal -= res;
+					// Assault.planetMetal -= res;
+					Assault.haulMetal += res;
+				}
+				if (availSilicon > 0) {
+					h = availHydrogen > 0 ? 1 : 0;
+					cnt = 1 + h;
+					res = Math.min(availSilicon, Math.ceil(capacity / cnt));
+					capacity -= res;
+					haulSilicon += res;
+					availSilicon -= res;
+					// Assault.planetSilicon -= res;
+					Assault.haulSilicon += res;
+				}
+				if (availHydrogen > 0) {
+					res = Math.min(availHydrogen, capacity);
+					capacity -= res;
+					haulHydrogen += res;
+					availHydrogen -= res;
+					// Assault.planetHydrogen -= res;
+					Assault.haulHydrogen += res;
+				}
+
+				/*
+				 * Assault.updateAssault("[Participant::finish] end step " +
+				 * ", partid: " + this.getParticipantId() +
+				 * ", availMetal: "+availMetal +
+				 * ", availSilicon: "+availSilicon +
+				 * ", availHydrogen: "+availHydrogen +
+				 * ", capacity: "+capacity, true);
+				 */
+			}
+			return false;
+		}
+		// capacity = 0;
+			
+		haulMetal += availMetal;
+		// Assault.planetMetal -= availMetal;
+		
+		haulSilicon += availSilicon;
+		// Assault.planetSilicon -= availSilicon;
+		
+		haulHydrogen += availHydrogen;
+		// Assault.planetHydrogen -= availHydrogen;
+		
+		Assault.haulMetal += availMetal;
+		Assault.haulSilicon += availSilicon;
+		Assault.haulHydrogen += availHydrogen;
+		
+		return partsNumber > 1;
 	}
 
 	public void finish() {

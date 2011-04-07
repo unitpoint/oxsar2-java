@@ -1888,6 +1888,12 @@ public class Assault
 				+ "', defender_lost_hydrogen = '" + clampDbVal(defenderLostHydrogen)
 				+ "', debris_metal = '" + clampDbVal(debrisMetal)
 				+ "', debris_silicon = '" + clampDbVal(debrisSilicon)
+				+ "', planet_metal = '" + clampDbVal(planetMetal)
+				+ "', planet_silicon = '" + clampDbVal(planetSilicon)
+				+ "', planet_hydrogen = '" + clampDbVal(planetHydrogen)
+				+ "', haul_metal = '" + clampDbVal(haulMetal)
+				+ "', haul_silicon = '" + clampDbVal(haulSilicon)
+				+ "', haul_hydrogen = '" + clampDbVal(haulHydrogen)
 				+ "', attacker_exp = '" + atterBattleExperience
 				+ "', defender_exp = '" + defenderBattleExperience
 				+ "', turns = '" + battleTurnsNumber
