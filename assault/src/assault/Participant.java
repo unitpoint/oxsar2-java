@@ -440,8 +440,11 @@ public class Participant {
 			String prefix = Assault.getTablePrefix();
 			Statement stmt = Database.createStatement();
 			String sql = "SELECT f2a.unitid, f2a.quantity, f2a.damaged, f2a.shell_percent, "
-					+ "sd.attack, sd.shield, sd.capicity, "
-					+ "b.mode, b.front, b.ballistics, b.masking, b.name, b.basic_metal, b.basic_silicon, b.basic_hydrogen"
+					+ "sd.capicity, sd.attack, sd.shield, "
+					+ "sd.front, sd.ballistics, sd.masking, "
+					+ "sd.attacker_attack, sd.attacker_shield, "
+					+ "sd.attacker_front, sd.attacker_ballistics, sd.attacker_masking, "
+					+ "b.mode, b.name, b.basic_metal, b.basic_silicon, b.basic_hydrogen"
 					+ " FROM "
 					+ prefix
 					+ "fleet2assault f2a"
@@ -468,13 +471,14 @@ public class Participant {
 						&& isDefender()) {
 					continue;
 				}
+				boolean isAttacker = this.isAttacker();
 				int structure = rs.getInt("basic_metal") + rs.getInt("basic_silicon");
-				int unitAttack = (int) Math.round(rs.getInt("attack") * (1 + getAttackLevel() / 10.0));
-				int unitShield = (int) Math.round(rs.getInt("shield") * (1 + getShieldLevel() / 10.0));
 				int unitShell = (int) Math.round(structure * (1 + getShellLevel() / 10.0) / 10.0);
-				int unitFront = rs.getInt("front");
-				int unitBallistics = rs.getInt("ballistics") + getBallisticsLevel();
-				int unitMasking = rs.getInt("masking") + getMaskingLevel();
+				int unitAttack = (int) Math.round(rs.getInt(isAttacker ? "attacker_attack" : "attack") * (1 + getAttackLevel() / 10.0));
+				int unitShield = (int) Math.round(rs.getInt(isAttacker ? "attacker_shield" : "shield") * (1 + getShieldLevel() / 10.0));
+				int unitFront = rs.getInt(isAttacker ? "attacker_front" : "front");
+				int unitBallistics = rs.getInt(isAttacker ? "attacker_ballistics" : "ballistics") + getBallisticsLevel();
+				int unitMasking = rs.getInt(isAttacker ? "attacker_masking" : "masking") + getMaskingLevel();
 				
 				int attack0 = (int) Math.ceil(unitAttack * attackFactors[0]); 
 				int attack1 = (int) Math.ceil(unitAttack * attackFactors[1]); 
