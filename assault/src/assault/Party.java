@@ -428,8 +428,10 @@ public class Party
 	
 	public void unitsAttack(Units units, int quantity)
 	{
+		/*
 		Assault.updateAssault("[unitsAttack] unitid: "+units.getUnitid()
 				+ ", quant: "+quantity);
+		*/
 		
 		Participant participant = units.getParticipant();
 		// double attackMissFactor = participant.getAttackMissFactor();

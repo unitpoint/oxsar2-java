@@ -14,6 +14,7 @@ public class Participant {
 
 	private int type;
 	private int userid;
+	// private int planetid;
 	private int participantid = 0;
 	private int primaryTargetUnitid = 0;
 	private boolean isAliens = false;
@@ -26,6 +27,8 @@ public class Participant {
 	private int laserLevel = 0;
 	private int ionLevel = 0;
 	private int plasmaLevel = 0;
+	private int shipyardLevel = 0;
+	private int defenseFactoryLevel = 0;
 	
 	private double [] attackFactors = { 1, 0, 0 };
 	private double [] shieldFactors = { 1, 0, 0 };
@@ -232,16 +235,16 @@ public class Participant {
 		return this.userid;
 	}
 
-	public int getAttackLevel() {
-		return Math.max(0, attackLevel + addAttackLevel);
+	public double getAttackLevel() {
+		return Math.max(0, attackLevel + shipyardLevel*0.1 + addAttackLevel);
 	}
 
 	public int getAttackAddLevel() {
 		return addAttackLevel;
 	}
 
-	public int getShieldLevel() {
-		return Math.max(0, shieldLevel + addShieldLevel);
+	public double getShieldLevel() {
+		return Math.max(0, shieldLevel+ defenseFactoryLevel*0.1 + addShieldLevel);
 	}
 
 	public int getShieldAddLevel() {
@@ -256,22 +259,30 @@ public class Participant {
 		return addShellLevel;
 	}
 
-	public int getBallisticsLevel() {
-		return Math.max(0, ballisticsLevel + addBallisticsLevel);
+	public double getBallisticsLevel() {
+		return Math.max(0, ballisticsLevel + shipyardLevel*0.1 + addBallisticsLevel);
 	}
 
 	public int getBallisticsAddLevel() {
 		return addBallisticsLevel;
 	}
 
-	public int getMaskingLevel() {
-		return Math.max(0, maskingLevel + addMaskingLevel);
+	public double getMaskingLevel() {
+		return Math.max(0, maskingLevel + defenseFactoryLevel*0.1 + addMaskingLevel);
 	}
 
 	public int getMaskingAddLevel() {
 		return addMaskingLevel;
 	}
 
+	public int getShipyardLevel() {
+		return shipyardLevel;
+	}
+	
+	public int getDefenseFactoryLevel() {
+		return defenseFactoryLevel;
+	}
+	
 	public int getLaserLevel() {
 		return Math.max(0, laserLevel + addLaserLevel);
 	}
@@ -319,8 +330,9 @@ public class Participant {
 		return lostUnits;
 	}
 
-	public Participant(int userid, int type, String username) {
+	public Participant(int userid, int type, int planetid, String username) {
 		this.userid = userid;
+		// this.planetid = planetid;
 		this.type = type;
 		this.username = username;
 		if (userid == 0 || username == "") {
@@ -355,7 +367,8 @@ public class Participant {
 					+ "research2user r2u " + " WHERE r2u.buildingid in ("
 					+ Assault.UNIT_GUN_TECH + ", " + Assault.UNIT_SHIELD_TECH + ", " + Assault.UNIT_SHELL_TECH + ", "					
 					+ Assault.UNIT_BALLISTICS_TECH + ", " + Assault.UNIT_MASKING_TECH + ", " 
-					+ Assault.UNIT_LASER_TECH + ", " + Assault.UNIT_ION_TECH + ", " + Assault.UNIT_PLASMA_TECH
+					+ Assault.UNIT_LASER_TECH + ", " + Assault.UNIT_ION_TECH + ", " + Assault.UNIT_PLASMA_TECH + ", "
+					+ Assault.UNIT_SHIPYARD + ", " + Assault.UNIT_DEFENSE_FACTORY
 					+ ") AND r2u.userid = '"
 					+ userid + "'");
 			while (rs.next()) {
@@ -384,6 +397,12 @@ public class Participant {
 				case Assault.UNIT_PLASMA_TECH:
 					plasmaLevel = rs.getInt("level");
 					break;
+				case Assault.UNIT_SHIPYARD:
+					shipyardLevel = rs.getInt("level");
+					break;
+				case Assault.UNIT_DEFENSE_FACTORY:
+					defenseFactoryLevel = rs.getInt("level");
+					break;
 				}
 			}
 			// attackMissFactor = Math.pow(0.9, attackAccuracyLevel);
@@ -394,6 +413,42 @@ public class Participant {
 					+ ", masking lvl: " + maskingLevel);
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
+		}
+
+		/**
+		 * Get builds.
+		 */
+		if(!Assault.isBattleSimulation)
+		{
+			rs = null;
+			try {
+				Statement stmt = Database.createStatement();
+				rs = stmt.executeQuery("SELECT level, buildingid "
+						+ " FROM " + Assault.getTablePrefix()
+						+ "building2planet " + " WHERE buildingid in ("
+						+ Assault.UNIT_SHIPYARD + ", " + Assault.UNIT_DEFENSE_FACTORY
+						+ ") AND planetid = '" + planetid + "'");
+				while (rs.next()) {
+					switch (rs.getInt("buildingid")) {
+					case Assault.UNIT_SHIPYARD:
+						shipyardLevel = rs.getInt("level");
+						break;
+					case Assault.UNIT_DEFENSE_FACTORY:
+						defenseFactoryLevel = rs.getInt("level");
+						break;
+					}
+				}
+			} catch (SQLException e) {
+				System.err.println(e.getMessage());
+			}
+		}
+		
+		if(isAttacker()){
+			// shipyardLevel = 0;
+			defenseFactoryLevel = 0;
+		}else{
+			shipyardLevel = 0;
+			// defenseFactoryLevel = 0;
 		}
 	}
 
@@ -435,11 +490,20 @@ public class Participant {
                                      + attackFactors[2] * Assault.ADV_TECH_MATRIX[i][2];					                                                                 	
 			}
 		}
+		/*
+		for(int i = 0; i < 3; i++){
+			attackFactors[i] += shipyardLevel * 0.01;
+			shieldFactors[i] += defenseFactoryLevel * 0.01;
+		}
+		*/
 		ResultSet rs = null;
 		try {
 			String prefix = Assault.getTablePrefix();
 			Statement stmt = Database.createStatement();
-			String sql = "SELECT f2a.unitid, f2a.quantity, f2a.damaged, f2a.shell_percent, "
+			String sql = "SELECT f2a.unitid, "
+					+ "f2a.org_quantity as quantity, "
+					+ "f2a.org_damaged as damaged, "
+					+ "f2a.org_shell_percent as shell_percent, "
 					+ "sd.capicity, sd.attack, sd.shield, "
 					+ "sd.front, sd.ballistics, sd.masking, "
 					+ "sd.attacker_attack, sd.attacker_shield, "
@@ -477,8 +541,8 @@ public class Participant {
 				int unitAttack = (int) Math.round(rs.getInt(isAttacker ? "attacker_attack" : "attack") * (1 + getAttackLevel() / 10.0));
 				int unitShield = (int) Math.round(rs.getInt(isAttacker ? "attacker_shield" : "shield") * (1 + getShieldLevel() / 10.0));
 				int unitFront = rs.getInt(isAttacker ? "attacker_front" : "front");
-				int unitBallistics = rs.getInt(isAttacker ? "attacker_ballistics" : "ballistics") + getBallisticsLevel();
-				int unitMasking = rs.getInt(isAttacker ? "attacker_masking" : "masking") + getMaskingLevel();
+				double unitBallistics = rs.getInt(isAttacker ? "attacker_ballistics" : "ballistics") + getBallisticsLevel();
+				double unitMasking = rs.getInt(isAttacker ? "attacker_masking" : "masking") + getMaskingLevel();
 				
 				int attack0 = (int) Math.ceil(unitAttack * attackFactors[0]); 
 				int attack1 = (int) Math.ceil(unitAttack * attackFactors[1]); 
@@ -881,7 +945,7 @@ public class Participant {
 		}
 
 		// Update data
-		if (!Assault.debugmode && userid > 0) {
+		if (!Assault.debugmode && userid > 0 && !Assault.isBattleSimulation) {
 			if (!Assault.useridReported.contains(userid)) {
 				try {
 					String battleKey = ""

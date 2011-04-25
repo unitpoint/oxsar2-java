@@ -34,8 +34,8 @@ public class Units
 	private int basicHydrogen = 0;
 	private int front = 0;
 	private int weight = 0;
-	private int ballisticsLevel = 0;
-	private int maskingLevel = 0;
+	private double ballisticsLevel = 0;
+	private double maskingLevel = 0;
 	// private List<Unit> units = new ArrayList<Unit>();
 	private int startBattleQuantity = 0;
 	private int startBattleDamaged = 0;
@@ -120,12 +120,12 @@ public class Units
 		return (long)weight * turnAtterQuantity;
 	}
 	
-	public int getBallisticsLevel()
+	public double getBallisticsLevel()
 	{
 		return ballisticsLevel;
 	}
 
-	public int getMaskingLevel()
+	public double getMaskingLevel()
 	{
 		return maskingLevel;
 	}
@@ -348,7 +348,7 @@ public class Units
 			int attack1, int attack2, int attack3,
 			int shield1, int shield2, int shield3, 
 			int shell, int front,
-			int ballistics, int masking,
+			double ballistics, double masking,
 			int quantity, int damaged, int damagedShellPercent)
 	{
 		if(damagedShellPercent > 99 || damaged <= 0)
@@ -614,8 +614,8 @@ public class Units
 		damages[2] = getAttack2();		
 		if(underFireUnits.curQuantity > 0 && (damages[0] > 0 || damages[1] > 0 || damages[2] > 0))
 		{
-			int ballistics = getBallisticsLevel();
-			int masking = underFireUnits.getMaskingLevel();
+			double ballistics = getBallisticsLevel();
+			double masking = underFireUnits.getMaskingLevel();
 			
 			// int useQuantity = (int) (curQuantity + (quantity - curQuantity) * attackMissFactor);
 			int virtualQuantity = Math.max(underFireUnits.curQuantity, (int)Math.ceil(underFireUnits.quantity * (1 + (masking - ballistics) * 2 / 10.0)));

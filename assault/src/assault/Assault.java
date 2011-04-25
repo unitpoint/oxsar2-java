@@ -215,6 +215,7 @@ public class Assault
 	// public static final QuickRandom random = new QuickRandom();
 	public static final Random random = new Random();
 	public static DecimalFormat decFormatter; // = new DecimalFormat(",###");
+	public static DecimalFormat oneDigitFormatter;
 	public static Map<String, Integer> defenseRepaired = new HashMap<String, Integer>();
 	public static Map<String, Integer> graspedUnits = new HashMap<String, Integer>();
 	public static List<Integer> useridReported = new ArrayList<Integer>();
@@ -318,6 +319,7 @@ public class Assault
 		dfs.setGroupingSeparator('.');
 		dfs.setDecimalSeparator(',');
 		decFormatter = new DecimalFormat(",###", dfs);
+		oneDigitFormatter = new DecimalFormat(",###.#", dfs);
 		
 		startTime = System.currentTimeMillis();
 
@@ -430,7 +432,7 @@ public class Assault
 		try {
 			updateAssault("[read participants] before");
 
-			String sql = "SELECT u.userid, u.username, pp.mode, pp.participantid, " +
+			String sql = "SELECT u.userid, u.username, pp.mode, pp.participantid, pp.planetid, " +
 				"pp.planetid, pp.preloaded, pp.consumption, pp.target_unitid, " +
 				"pp.add_gun_tech, pp.add_shield_tech, pp.add_shell_tech, " +
 				"pp.add_ballistics_tech, pp.add_masking_tech, " +
@@ -455,7 +457,8 @@ public class Assault
 					int type = rs.getInt("mode");
 					if(type == Participant.ATTACKER || type == Participant.DEFENDER)
 					{
-						Participant participant = new Participant(userid, type, rs.getString("username"));
+						int planetid = rs.getInt("pp.planetid");
+						Participant participant = new Participant(userid, type, planetid, rs.getString("username"));
 						participant.setAddLevels(
 								rs.getInt("add_gun_tech"),
 								rs.getInt("add_shield_tech"),
@@ -1485,14 +1488,28 @@ public class Assault
 		}
 	}
 	
-	public static void printAddTech(int level, boolean isPercent)
+	public static String getStringAutoValue(double level, boolean forceInt)
+	{
+		if(forceInt || Math.abs((int)level - level) < 0.1){
+			return String.format("%.0f", level);
+		}
+		
+		return oneDigitFormatter.format(level);
+	}
+
+	public static String getStringAutoValue(double level)
+	{
+		return getStringAutoValue(level, false);
+	}
+	
+	public static void printAddTech(double level, boolean isPercent)
 	{
 		if(level != 0)
 		{
-			assaultReportBuf.append(String.format("<span class='%s'><nowrap>( %s%d%s )</nowrap></span> ", 
+			assaultReportBuf.append(String.format("<span class='%s'><nowrap>( %s%s%s )</nowrap></span> ", 
 					level > 0 ? "rep_quantity_grasped" : "rep_quantity_diff",
 					level > 0 ? "+" : "",
-					level,
+					getStringAutoValue(level, isPercent),
 					isPercent ? "&#037" : ""));						
 		}
 	}
@@ -1511,12 +1528,12 @@ public class Assault
 				participant.getShellLevel() * 10.0));
 		printAddTech(participant.getShellAddLevel() * 10, true);
 		
-		assaultReportBuf.append(String.format("&nbsp; {lang}BALLISTICS_TECH{/lang}: %d ",
-				participant.getBallisticsLevel()));						
+		assaultReportBuf.append(String.format("&nbsp; {lang}BALLISTICS_TECH{/lang}: %s ",
+				getStringAutoValue(participant.getBallisticsLevel())));
 		printAddTech(participant.getBallisticsAddLevel(), false);
 		
-		assaultReportBuf.append(String.format("&nbsp; {lang}MASKING_TECH{/lang}: %d ",
-				participant.getMaskingLevel()));						
+		assaultReportBuf.append(String.format("&nbsp; {lang}MASKING_TECH{/lang}: %s ",
+				getStringAutoValue(participant.getMaskingLevel())));						
 		printAddTech(participant.getMaskingAddLevel(), false);
 		
 		if(isBattleAdvanced)
@@ -1559,10 +1576,10 @@ public class Assault
 		int minFront = 0, maxFront = 0;
 		
 		boolean ballisticsSet = false;
-		int minBallistics = 0, maxBallistics = 0;
+		double minBallistics = 0, maxBallistics = 0;
 		
 		boolean maskingSet = false;
-		int minMasking = 0, maxMasking = 0;
+		double minMasking = 0, maxMasking = 0;
 		
 		for (Units units : participant.getUnits())
 		{
@@ -1697,7 +1714,7 @@ public class Assault
 					frontBuf.append("<td>-</td>");
 				}
 				
-				ballisticsBuf.append("<td>" + decFormatter.format(units.getBallisticsLevel()) + "</td>");
+				ballisticsBuf.append("<td>" + getStringAutoValue(units.getBallisticsLevel()) + "</td>");
 				if(!ballisticsSet)
 				{
 					ballisticsSet = true;
@@ -1709,7 +1726,7 @@ public class Assault
 					maxBallistics = Math.max(maxBallistics, units.getBallisticsLevel());
 				}
 				
-				maskingBuf.append("<td>" + decFormatter.format(units.getMaskingLevel()) + "</td>");
+				maskingBuf.append("<td>" + getStringAutoValue(units.getMaskingLevel()) + "</td>");
 				if(!maskingSet)
 				{
 					maskingSet = true;
@@ -1905,7 +1922,7 @@ public class Assault
 				+ "', turns = '" + battleTurnsNumber
 				+ "', gentime = '" + time + "', accomplished = '1'"
 				+ " WHERE assaultid = '" + assaultid + "'";
-		updateAssault("[finish] Set final data for this assault, sql: " + sql);
+		// updateAssault("[finish] Set final data for this assault, sql: " + sql);
 		try {
 			stmt.executeUpdate(sql);
 		} catch (SQLException e) {
@@ -1916,15 +1933,12 @@ public class Assault
 
 	public static void updateAssault(String s, boolean addMessage)
 	{
-		/*
-		addMessage = true;
-		if (false) // && addMessage) {
-		{
+		addMessage = false;
+		if (addMessage) {
 			Statement stmt = Database.createStatement();
 			long time = System.currentTimeMillis() - startTime;
 			try {
-				stmt
-						.executeUpdate("UPDATE "
+				stmt.executeUpdate("UPDATE "
 								+ tablePrefix
 								+ "assault SET "
 								+ "gentime = '"
@@ -1939,7 +1953,6 @@ public class Assault
 				e.printStackTrace();
 			}
 		}
-		*/
 	}
 
 	public static void updateAssault(String s)
