@@ -1490,7 +1490,7 @@ public class Assault
 	
 	public static String getStringAutoValue(double level, boolean forceInt)
 	{
-		if(forceInt || Math.abs((int)level - level) < 0.1){
+		if(forceInt){ // || Math.abs((int)level - level) < 0.1){
 			return String.format("%.0f", level);
 		}
 		
