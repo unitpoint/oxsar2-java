@@ -618,7 +618,7 @@ public class Units
 			double masking = underFireUnits.getMaskingLevel();
 			
 			// int useQuantity = (int) (curQuantity + (quantity - curQuantity) * attackMissFactor);
-			int virtualQuantity = Math.max(underFireUnits.curQuantity, (int)Math.ceil(underFireUnits.quantity * (1 + (masking - ballistics) * 2 / 10.0)));
+			int virtualQuantity = Math.max(0 /*underFireUnits.curQuantity*/, (int)Math.ceil(underFireUnits.quantity * (1 + (masking - ballistics) * 2 / 10.0)));
 			int unitIndex = Assault.randExclude(virtualQuantity); // quantity is turn start number of units
 			if(unitIndex >= underFireUnits.curQuantity)
 			{

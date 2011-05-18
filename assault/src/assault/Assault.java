@@ -888,25 +888,30 @@ public class Assault
 					deathStarsNumber += units.getQuantity();
 				}
 			}
-			double chance = clampVal((100 - Math.sqrt(planetDiameter)) * Math.sqrt(deathStarsNumber), 0, 90); 
+			double chance = clampVal(Math.pow(planetDiameter, 0.45), 0, 50); 
 			if(randDouble(0.1, 100) <= chance)
 			{
-				for (Participant participant : party.getDefenders())
-				{
-					for(Units units : participant.getUnits())
-					{
-						units.destroyAfterTurnFinished(units.getQuantity());
-					}
-				}
-				targetDestroyed = true;
-				planetMetal = 0;
-				planetSilicon = 0;
-				targetDestroyBuf.append("{lang}TARGET_MOON_DESTROYED{/lang}<br />\n");
+				targetDestroyBuf.append("{lang}TARGET_MOON_NOT_DESTROYED{/lang}<br />\n");
 			}
 			else
 			{
-				chance = clampVal(Math.sqrt(planetDiameter), 0, 90);
+				// chance = clampVal((100 - Math.sqrt(planetDiameter)) * Math.pow(deathStarsNumber, 0.3), 0, 50);
+				chance = clampVal(20 * Math.pow(deathStarsNumber, 0.2), 0, 50);
 				if(randDouble(0.1, 100) <= chance)
+				{
+					for (Participant participant : party.getDefenders())
+					{
+						for(Units units : participant.getUnits())
+						{
+							units.destroyAfterTurnFinished(units.getQuantity());
+						}
+					}
+					targetDestroyed = true;
+					planetMetal = 0;
+					planetSilicon = 0;
+					targetDestroyBuf.append("{lang}TARGET_MOON_DESTROYED{/lang}<br />\n");
+				}
+				else
 				{
 					for (Participant participant : party.getAttackers())
 					{
@@ -918,10 +923,6 @@ public class Assault
 					assaultResult = 2;
 					attackerFleetsExplode = true;
 					targetDestroyBuf.append("{lang}ATTACKER_FLLETS_EXPLODE{/lang}<br />\n");
-				}
-				else
-				{
-					targetDestroyBuf.append("{lang}TARGET_MOON_NOT_DESTROYED{/lang}<br />\n");
 				}
 			}
 		}
