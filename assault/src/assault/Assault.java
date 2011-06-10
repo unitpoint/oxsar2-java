@@ -898,7 +898,7 @@ public class Assault
 			else
 			{
 				// chance = clampVal((100 - Math.sqrt(planetDiameter)) * Math.pow(deathStarsNumber, 0.3), 0, 50);
-				chance = clampVal(10 * Math.pow(deathStarsNumber - minDeathStarsNumber + 1, 0.2), 0, 20);
+				chance = clampVal(5 * Math.pow(deathStarsNumber - minDeathStarsNumber + 1, 0.25), 0, 20);
 				if(randDouble(1, 100) <= chance && deathStarsNumberValid)
 				{
 					for (Participant participant : party.getDefenders())
