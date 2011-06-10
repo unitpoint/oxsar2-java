@@ -575,7 +575,7 @@ public class Party
 				
 					// targetUnits.processDamage(units); // unitid, units.getAttack(), attackMissFactor);
 					units.processAttack(targetUnits);
-					if(rapidFire <= 0 || Assault.randDouble(0, 100) > rapidChance) // targetUnits.getCurQuantity() <= 0)
+					if(rapidFire <= 0 || Assault.randDouble(1, 100) >= rapidChance) // targetUnits.getCurQuantity() <= 0)
 					{
 						break;
 					}

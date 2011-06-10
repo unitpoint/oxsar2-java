@@ -890,7 +890,7 @@ public class Assault
 			}
 			double chance = clampVal(Math.pow(planetDiameter, 0.45), 0, 50);
 			boolean deathStarsNumberValid = deathStarsNumber >= Math.floor(planetDiameter / 1000.0);
-			if(randDouble(0.1, 100) <= chance || (!deathStarsNumberValid && randDouble(0.1, 100) < 50))
+			if(randDouble(1, 100) <= chance || (!deathStarsNumberValid && randDouble(1, 100) < 50))
 			{
 				targetDestroyBuf.append("{lang}TARGET_MOON_NOT_DESTROYED{/lang}<br />\n");
 			}
@@ -898,7 +898,7 @@ public class Assault
 			{
 				// chance = clampVal((100 - Math.sqrt(planetDiameter)) * Math.pow(deathStarsNumber, 0.3), 0, 50);
 				chance = clampVal(10 * Math.pow(deathStarsNumber, 0.25), 0, 25);
-				if(randDouble(0.1, 100) <= chance && deathStarsNumberValid)
+				if(randDouble(1, 100) <= chance && deathStarsNumberValid)
 				{
 					for (Participant participant : party.getDefenders())
 					{
@@ -962,7 +962,7 @@ public class Assault
 					}
 				}
 				double targetDestroyChance = clampVal(10 * Math.pow(deathStarsNumber, 0.8), 0, 90);
-				if(randDouble(0.1, 100) <= targetDestroyChance)
+				if(randDouble(1, 100) <= targetDestroyChance)
 				{
 					targetDestroyed = true;
 					
@@ -988,7 +988,7 @@ public class Assault
 					int destroyed = 0;
 					for(int i = 0; i < units.getQuantity(); i++)
 					{
-						if(randDouble(0.1, 100) > targetDestroyChance)
+						if(randDouble(1, 100) >= targetDestroyChance)
 						{
 							destroyed++;
 						}
@@ -1343,7 +1343,7 @@ public class Assault
 						assaultReportBuf.append("<br />\n{embedded["+langStrId+"]}"
 								+ decFormatter.format(moonChance)
 								+ "{/embedded}<br />\n");
-						if (randDouble(0.1, 100) <= moonChance) {
+						if (randDouble(1, 100) <= moonChance) {
 							moon = true;
 							assaultReportBuf.append("<b>{lang}MOON_ARTEFACT_APPEARED{/lang}</b><br />\n");
 						}
@@ -1790,7 +1790,7 @@ public class Assault
 		if (rf > 0) {
 			// Random chance of shot again
 			double chance = 100.0 * (rf - 1) / rf;
-			return randDouble(0, 100) <= chance;
+			return randDouble(1, 100) <= chance;
 		}
 		return false;
 	}
