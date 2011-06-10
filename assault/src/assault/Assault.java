@@ -889,15 +889,16 @@ public class Assault
 				}
 			}
 			double chance = clampVal(Math.pow(planetDiameter, 0.45), 0, 50);
-			boolean deathStarsNumberValid = deathStarsNumber >= Math.floor(planetDiameter / 1000.0);
-			if(randDouble(1, 100) <= chance || (!deathStarsNumberValid && randDouble(1, 100) < 50))
+			int minDeathStarsNumber = (int) Math.floor(planetDiameter / 1000.0);
+			boolean deathStarsNumberValid = deathStarsNumber >= minDeathStarsNumber;
+			if(randDouble(1, 100) <= chance || (!deathStarsNumberValid && randDouble(1, 100) < 20))
 			{
 				targetDestroyBuf.append("{lang}TARGET_MOON_NOT_DESTROYED{/lang}<br />\n");
 			}
 			else
 			{
 				// chance = clampVal((100 - Math.sqrt(planetDiameter)) * Math.pow(deathStarsNumber, 0.3), 0, 50);
-				chance = clampVal(10 * Math.pow(deathStarsNumber, 0.25), 0, 25);
+				chance = clampVal(10 * Math.pow(deathStarsNumber - minDeathStarsNumber + 1, 0.2), 0, 20);
 				if(randDouble(1, 100) <= chance && deathStarsNumberValid)
 				{
 					for (Participant participant : party.getDefenders())
