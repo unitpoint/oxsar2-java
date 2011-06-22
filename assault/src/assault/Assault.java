@@ -987,13 +987,16 @@ public class Assault
 					
 					planetMetal += targetBuildingMetal;
 					planetSilicon += targetBuildingSilicon;
+					
+					targetDestroyChance *= 2;
 				}
+				double deathStarsDestroyChance = 100 - clampVal(targetDestroyChance*4, 50, 90);
 				for(Units units : unitsList)
 				{
 					int destroyed = 0;
 					for(int i = 0; i < units.getQuantity(); i++)
 					{
-						if(randDouble(1, 100) >= targetDestroyChance)
+						if(randDouble(1, 100) <= deathStarsDestroyChance)
 						{
 							destroyed++;
 						}
