@@ -226,7 +226,10 @@ public class Party
 							{
 								activeDefenseUnits.add(units);							
 							}
-							turnAtterUnits.add(units);
+							int damage = units.getAttack0() + units.getAttack1() + units.getAttack2();
+							if(damage > 0){
+								turnAtterUnits.add(units);
+							}
 						}
 					}
 				}
