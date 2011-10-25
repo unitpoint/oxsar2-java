@@ -33,20 +33,22 @@ public class Units
 	private int basicSilicon = 0;
 	private int basicHydrogen = 0;
 	private int front = 0;
-	private int weight = 0;
+	private long weight = 0;
 	private double ballisticsLevel = 0;
 	private double maskingLevel = 0;
 	// private List<Unit> units = new ArrayList<Unit>();
 	private int startBattleQuantity = 0;
 	private int startBattleDamaged = 0;
 	private int startBattleDamagedShellPercent = 100;
-	
+
 	private int curQuantity = 0;
 	// private int destroyed = 0;
 	private List<Unit> curDamagedUnits = new ArrayList<Unit>();
-	
+
 	private int quantity = 0;
+    private long fullWeight = 0;
 	private int turnAtterQuantity = 0;
+    private long turnAtterWeight = 0;
 	private int quantityDiff = 0;
 	private int firedDiff = 0;
 	private int damaged = 0;
@@ -57,11 +59,11 @@ public class Units
 	private int totalDestroyed = 0;
 	private int totalFired = 0;
 	private int prevTotalFired = 0;
-	
+
 	public int getStartBattleQuantity()
 	{
 		return startBattleQuantity;
-	}	
+	}
 	public int getStartBattleDamaged()
 	{
 		return startBattleDamaged;
@@ -69,13 +71,13 @@ public class Units
 	public int getStartBattleDamagedShellPercent()
 	{
 		return startBattleDamagedShellPercent;
-	}	
-	
+	}
+
 	public int getCurQuantity()
 	{
 		return curQuantity; // units.size();
 	}
-	
+
 	public int getQuantity()
 	{
 		return quantity;
@@ -88,8 +90,9 @@ public class Units
 	public void decTurnAtterQuantity(int value)
 	{
 		turnAtterQuantity = Math.max(0, turnAtterQuantity - value);
+        turnAtterWeight = weight * turnAtterQuantity;
 	}
-	
+
 	public int getDamaged()
 	{
 		// return endTurnDamagedShellPercent <= 99 ? damagedUnits.size() : 0;
@@ -99,27 +102,27 @@ public class Units
 	{
 		return (int) damagedShellPercent;
 	}
-	
+
 	public int getFront()
 	{
 		return front;
 	}
-	
-	public int getWeight()
+
+	public long getWeight()
 	{
 		return weight;
 	}
-	
+
 	public long getFullWeight()
 	{
-		return (long)weight * quantity;
+		return fullWeight; // fullWeight = (long)weight * quantity;
 	}
-	
+
 	public long getTurnAtterWeight()
 	{
-		return (long)weight * turnAtterQuantity;
+		return turnAtterWeight; // turnAtterWeight = (long)weight * turnAtterQuantity;
 	}
-	
+
 	public double getBallisticsLevel()
 	{
 		return ballisticsLevel;
@@ -129,7 +132,7 @@ public class Units
 	{
 		return maskingLevel;
 	}
-	
+
 	/*
 	public int getDamagedShell()
 	{
@@ -189,7 +192,7 @@ public class Units
 	{
 		baseAttack = value;
 	}
-	
+
 	public int getAttack0()
 	{
 		return attack0;
@@ -270,7 +273,7 @@ public class Units
 	{
 		return quantityDiff;
 	}
-	
+
 	public int getFiredDiff()
 	{
 		return firedDiff;
@@ -344,9 +347,9 @@ public class Units
 		this.participant = p;
 	} */
 
-	public Units(Participant p, int userid, int unitid, String name, 
+	public Units(Participant p, int userid, int unitid, String name,
 			int attack1, int attack2, int attack3,
-			int shield1, int shield2, int shield3, 
+			int shield1, int shield2, int shield3,
 			int shell, int front,
 			double ballistics, double masking,
 			int quantity, int damaged, int damagedShellPercent)
@@ -356,7 +359,7 @@ public class Units
 			damagedShellPercent = 100;
 			damaged = 0;
 		}
-		
+
 		this.participant = p;
 		this.unitid = unitid;
 		this.name = name;
@@ -369,7 +372,7 @@ public class Units
 		this.shield2 = shield3;
 		this.shell = shell;
 		this.front = front;
-		this.weight = (int) Math.pow(2, front);
+		this.weight = (long) Math.pow(2, front);
 		this.ballisticsLevel = ballistics;
 		this.maskingLevel = masking;
 		this.startBattleQuantity = quantity;
@@ -377,10 +380,12 @@ public class Units
 		this.startBattleDamagedShellPercent = damagedShellPercent;
 		this.curQuantity = quantity;
 		this.quantity = quantity;
+        this.fullWeight = this.weight * quantity;
 		this.turnAtterQuantity = quantity;
+        this.turnAtterWeight = this.weight * this.turnAtterQuantity;
 		this.damaged = damaged;
 		this.damagedShellPercent = damagedShellPercent;
-		
+
 		/* if(unitid == Assault.UNIT_INTERPLANETARY_ROCKET)
 		{
 			this.ballisticsLevel += 10;
@@ -390,26 +395,26 @@ public class Units
 		this.weight = (shell + 250) / 500;
 		if(this.weight < 1) this.weight = 1;
 		else if(this.weight > 20) this.weight = 20;
-		
+
 		switch(unitid)
 		{
 		case Assault.UNIT_SMALL_SHIELD:
 			this.weight = 100;
 			break;
-			
+
 		case Assault.UNIT_LARGE_SHIELD:
 			this.weight = 200;
 			break;
 		}
 		*/
-		
+
 		int damagedShell = (int) ((double)shell * damagedShellPercent / 100.0);
 		for(int i = 0; i < damaged; i++)
 		{
 			curDamagedUnits.add(Assault.newUnit(shield1, shield2, shield3, damagedShell));
 		}
 	}
-	
+
 	public void setupArtefactBonus()
 	{
 		int shellPowerArtefacts;
@@ -451,7 +456,7 @@ public class Units
 			attack1 = (int) Math.round(attack1 * bonusPower);
 			attack2 = (int) Math.round(attack2 * bonusPower);
 		}
-		
+
 		if(shellPowerArtefacts != 0 || shieldPowerArtefacts != 0)
 		{
 			for(Unit unit : curDamagedUnits)
@@ -463,19 +468,19 @@ public class Units
 			}
 		}
 	}
-	
+
 	/*
 	public int processDamage(Units attackUnits)
 	{
 		boolean isAttacker = participant.isAttacker();
 		boolean isDefender = !isAttacker;
-		
+
 		int returnDamage = 0;
 		int attackerUnitid = attackUnits.getUnitid();
 		int damage1 = attackUnits.getAttack0();
 		int damage2 = attackUnits.getAttack1();
 		int damage3 = attackUnits.getAttack2();
-		
+
 		int ballistics = attackUnits.getBallisticsLevel();
 		int masking = getMaskingLevel();
 		if(curQuantity > 0 && (damage1 > 0 || damage2 > 0 || damage3 > 0))
@@ -488,7 +493,7 @@ public class Units
 				Assault.addFireStat(isDefender, attackerUnitid, Assault.UNIT_NOTHING, 0, false);
 				return 0;
 			}
-			
+
 			Unit unit;
 			int ignoreDamageShield = shield / 100;
 			if(num >= curDamagedUnits.size())
@@ -501,19 +506,19 @@ public class Units
 					}
 					else
 					{
-						Assault.defenderShield += damage;	
+						Assault.defenderShield += damage;
 					}
 					Assault.addFireStat(isDefender, attackerUnitid, unitid, 0, false);
 					return damage;
 				}
 				unit = Assault.newUnit(shield, shield1, shield2, shell);
-				curDamagedUnits.add(unit);			
+				curDamagedUnits.add(unit);
 			}
 			else
 			{
 				unit = curDamagedUnits.get(num);
 			}
-			
+
 			int damageToShell = 0;
 			int shieldAbsorb = 0;
 
@@ -539,28 +544,28 @@ public class Units
 			}
 			else
 			{
-				Assault.defenderShield += shieldAbsorb;	
+				Assault.defenderShield += shieldAbsorb;
 			}
 			returnDamage += shieldAbsorb;
-			
+
 			boolean isDestroyed = false;
-			
+
 			// If there's still damage to shell
 			if(damageToShell > 0)
 			{
 				damageToShell = Math.min(damageToShell, unit.shell);
 				unit.shell -= damageToShell; // Decrease shell
-				
+
 				if (isAttacker)
 				{
-					Assault.attackerShellDestroyed += damageToShell;	
+					Assault.attackerShellDestroyed += damageToShell;
 				}
 				else
 				{
 					Assault.defenderShellDestroyed += damageToShell;
 				}
 				returnDamage += damageToShell;
-				
+
 				// Shell destroyed?
 				if(unit.shell <= 0)
 				{
@@ -596,41 +601,53 @@ public class Units
 		return returnDamage;
 	}
 	*/
-	
+
 	static private int [] processAttackTempDamages = new int[3];
 	static private int [] processAttackTempIgnoreDamages = new int[3];
-	
+
 	public int processAttack(Units underFireUnits)
 	{
-		boolean isBattleAttackerUnderFire = participant.isDefender(); 
+		boolean isBattleAttackerUnderFire = participant.isDefender();
 		// boolean isAttacker = participant.isAttacker();
 		// boolean isDefender = !isAttacker;
-		
+
 		int returnDamage = 0;
 		int attackerUnitid = getUnitid();
 		int [] damages = processAttackTempDamages;
 		damages[0] = getAttack0();
 		damages[1] = getAttack1();
-		damages[2] = getAttack2();		
+		damages[2] = getAttack2();
 		if(underFireUnits.curQuantity > 0 && (damages[0] > 0 || damages[1] > 0 || damages[2] > 0))
 		{
 			double ballistics = getBallisticsLevel();
 			double masking = underFireUnits.getMaskingLevel();
-			
+
 			// int useQuantity = (int) (curQuantity + (quantity - curQuantity) * attackMissFactor);
-			int virtualQuantity = Math.max(0 /*underFireUnits.curQuantity*/, (int)Math.ceil(underFireUnits.quantity * (1 + (masking - ballistics) * 2 / 10.0)));
+            double maskingEffect = masking - ballistics;
+            if(maskingEffect > 0)
+            {
+                maskingEffect *= 0.5;
+            }
+			int virtualQuantity = Math.max(0 /*underFireUnits.curQuantity*/, (int)Math.ceil(underFireUnits.quantity * (1 + maskingEffect * 2 / 10.0)));
 			int unitIndex = Assault.randExclude(virtualQuantity); // quantity is turn start number of units
 			if(unitIndex >= underFireUnits.curQuantity)
 			{
 				Assault.addFireStat(participant.isAttacker(), attackerUnitid, Assault.UNIT_NOTHING, 0, false);
 				return 0;
 			}
-			
+
 			int [] ignoreDamages = processAttackTempIgnoreDamages;
-			ignoreDamages[0] = underFireUnits.shield0 / 100;
-			ignoreDamages[1] = underFireUnits.shield1 / 100;
-			ignoreDamages[2] = underFireUnits.shield2 / 100;
-			
+            int underFireUnitid = underFireUnits.getUnitid();
+            if(underFireUnitid == Assault.UNIT_SMALL_PLANET_SHIELD || underFireUnitid == Assault.UNIT_LARGE_PLANET_SHIELD){
+                ignoreDamages[0] = 0; // underFireUnits.shield0 / 1000;
+                ignoreDamages[1] = 0; // underFireUnits.shield1 / 1000;
+                ignoreDamages[2] = 0; // underFireUnits.shield2 / 1000;
+            }else{
+                ignoreDamages[0] = underFireUnits.shield0 / 100;
+                ignoreDamages[1] = underFireUnits.shield1 / 100;
+                ignoreDamages[2] = underFireUnits.shield2 / 100;
+            }
+
 			Unit underFireUnit;
 			if(unitIndex >= underFireUnits.curDamagedUnits.size())
 			{
@@ -643,12 +660,12 @@ public class Units
 						{
 							returnDamage += damages[i];
 							if (isBattleAttackerUnderFire)
-							{								
+							{
 								Assault.attackerShield += damages[i];
 							}
 							else
 							{
-								Assault.defenderShield += damages[i];	
+								Assault.defenderShield += damages[i];
 							}
 						}
 					}
@@ -656,13 +673,13 @@ public class Units
 					return returnDamage;
 				}
 				underFireUnit = Assault.newUnit(underFireUnits.shield0, underFireUnits.shield1, underFireUnits.shield2, underFireUnits.shell);
-				underFireUnits.curDamagedUnits.add(underFireUnit);			
+				underFireUnits.curDamagedUnits.add(underFireUnit);
 			}
 			else
 			{
 				underFireUnit = underFireUnits.curDamagedUnits.get(unitIndex);
 			}
-			
+
 			int shieldAbsorb = 0;
 			int shellDamage = 0;
 
@@ -694,28 +711,28 @@ public class Units
 			}
 			else
 			{
-				Assault.defenderShield += shieldAbsorb;	
+				Assault.defenderShield += shieldAbsorb;
 			}
 			returnDamage += shieldAbsorb;
-			
+
 			boolean isDestroyed = false;
-			
+
 			// If there's still damage to shell
 			if(shellDamage > 0)
 			{
 				shellDamage = Math.min(shellDamage, underFireUnit.shell);
 				underFireUnit.shell -= shellDamage; // Decrease shell
-				
+
 				if (isBattleAttackerUnderFire)
 				{
-					Assault.attackerShellDestroyed += shellDamage;	
+					Assault.attackerShellDestroyed += shellDamage;
 				}
 				else
 				{
 					Assault.defenderShellDestroyed += shellDamage;
 				}
 				returnDamage += shellDamage;
-				
+
 				// Shell destroyed?
 				if(underFireUnit.shell <= 0)
 				{
@@ -750,7 +767,7 @@ public class Units
 		}
 		return returnDamage;
 	}
-	
+
 	public void destroy(int destroyQuantity)
 	{
 		while(curQuantity > 0 && destroyQuantity-- > 0)
@@ -765,14 +782,14 @@ public class Units
 			curQuantity--;
 		}
 	}
-	
+
 	public void firedDestroy(int destroyQuantity)
 	{
 		int oldQuantity = curQuantity;
 		destroy(destroyQuantity);
 		totalFired += oldQuantity - curQuantity;
 	}
-	
+
 	public void addQuantity(int addQuantity, int unitShell)
 	{
 		if(addQuantity > 0)
@@ -790,15 +807,17 @@ public class Units
 			}
 			curQuantity += addQuantity;
 			quantity += addQuantity;
+            fullWeight = weight * quantity;
 			quantityDiff += addQuantity;
 			turnAtterQuantity += addQuantity;
+            turnAtterWeight =  weight * turnAtterQuantity;
 			// totalLoss = Math.max(0, totalLoss - addQuantity);
 		}
 	}
 
 	public void addRepairedQuantity(int quantity)
 	{
-		addQuantity(quantity, shell);		
+		addQuantity(quantity, shell);
 	}
 
 	public void addGraspedQuantity(int quantity)
@@ -819,28 +838,30 @@ public class Units
 			}
 			else
 			{
-				percent = Assault.randInt(15, 45); 
+				percent = Assault.randInt(15, 45);
 			}
-			addQuantity(quantity, percent * shell / 100);		
+			addQuantity(quantity, percent * shell / 100);
 			totalGrasped += quantity;
 		}
 	}
-	
+
 	public void destroyAfterTurnFinished(int destroyQuantity)
 	{
 		int oldQuantity = curQuantity;
 		destroy(destroyQuantity);
 		destroyQuantity = oldQuantity - curQuantity;
-		
+
 		quantityDiff -= destroyQuantity;
 		recalculateDamaged();
-		
+
 		totalDestroyed += destroyQuantity;
-		
+
 		quantity = curQuantity;
+        fullWeight = weight * quantity;
 		turnAtterQuantity = curQuantity;
+        turnAtterWeight = weight * turnAtterQuantity;
 	}
-	
+
 	public void recalculateDamaged()
 	{
 		damaged = 0;
@@ -869,19 +890,21 @@ public class Units
 	{
 		firedDiff = prevTotalFired - totalFired;
 		prevTotalFired = totalFired;
-		
+
 		quantityDiff = curQuantity - quantity;
 		recalculateDamaged();
-		
-		int destroyed = quantity - curQuantity;		
+
+		int destroyed = quantity - curQuantity;
 		totalDestroyed += destroyed;
-		
+
 		// double bulkIntoDebris = Assault.getBulkIntoDebris(type);
 		// debrisMetal += Math.floor(basicMetal * destroyed * bulkIntoDebris);
 		// debrisSilicon += Math.floor(basicSilicon * destroyed * bulkIntoDebris);
-		
+
 		quantity = curQuantity;
+        fullWeight =  weight * quantity;
 		turnAtterQuantity = curQuantity;
+        turnAtterWeight = weight * turnAtterQuantity;
 	}
 
 	public void finish()

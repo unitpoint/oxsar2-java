@@ -11,31 +11,32 @@ public class Party
 	public class UnitsList extends ArrayList<Units>
 	{
 		private static final long serialVersionUID = -2075289362305531763L;
-		
+
 		public long weight = 0;
-		
+
 		public void clear()
 		{
 			weight = 0;
 			super.clear();
 		}
-		
+
 		public boolean add(Units units)
 		{
 			weight += units.getFullWeight();
 			return super.add(units);
 		}
 	}
-	
+
 	public class PartySide
 	{
 		public List<Participant> participants = new ArrayList<Participant>();
-		
+
 		public Map<Integer, UnitsList> activeUnitsMap = new HashMap<Integer, UnitsList>();
-		public UnitsList activeFleetUnits = new UnitsList();
+        public UnitsList activeUnits = new UnitsList();
+		// public UnitsList activeFleetUnits = new UnitsList();
 		public UnitsList activeDefenseUnits = new UnitsList();
 		public UnitsList turnAtterUnits = new UnitsList();
-		
+
 		public void addMapUnits(Units units)
 		{
 			UnitsList list = activeUnitsMap.get(units.getUnitid());
@@ -43,10 +44,10 @@ public class Party
 			{
 				list = new UnitsList();
 				activeUnitsMap.put(units.getUnitid(), list);
-			}	
+			}
 			list.add(units);
 		}
-		
+
 		private Units getRandomAtterUnits()
 		{
 			UnitsList unitsList = turnAtterUnits;
@@ -68,7 +69,7 @@ public class Party
 			}
 			return null;
 		}
-		
+
 		private Units getRandomTargetUnits(UnitsList unitsList)
 		{
 			int count = unitsList.size();
@@ -94,12 +95,19 @@ public class Party
 			}
 			return null;
 		}
-		
+
+		public Units getRandomUnits()
+		{
+			return getRandomTargetUnits(activeUnits);
+		}
+
+        /*
 		public Units getRandomFleetUnits()
 		{
 			return getRandomTargetUnits(activeFleetUnits);
 		}
-		
+        */
+
 		public Units getRandomDefenseUnits()
 		{
 			return getRandomTargetUnits(activeDefenseUnits);
@@ -140,7 +148,16 @@ public class Party
 					return units;
 				}
 			}
-			if(attackerUnitid == Assault.UNIT_INTERPLANETARY_ROCKET 
+            else if(attackerUnitid == Assault.UNIT_LARGE_PLANET_SHIELD)
+            {
+				units = getPrimaryTargetUnits(Assault.UNIT_DEATH_STAR);
+				if(units != null)
+				{
+					return units;
+				}
+            }
+            /*
+			if(attackerUnitid == Assault.UNIT_INTERPLANETARY_ROCKET
 					|| activeFleetUnits.size() == 0)
 			{
 				units = getRandomDefenseUnits();
@@ -157,17 +174,26 @@ public class Party
 			{
 				units = getRandomFleetUnits();
 			}
+            */
+            if(attackerUnitid == Assault.UNIT_INTERPLANETARY_ROCKET){
+                units = getRandomDefenseUnits();
+            }else{
+                units = getRandomUnits();
+            }
 			if(units != null)
 			{
-				if(units.getUnitid() == primaryTargetUnitid)
+                int unitid = units.getUnitid();
+				if(unitid == primaryTargetUnitid)
 				{
 					if(units.getCurQuantity() > 0)
 					{
 						return units;
 					}
 				}
-				else if((units.getUnitid() == Assault.UNIT_SMALL_SHIELD
-						|| units.getUnitid() == Assault.UNIT_LARGE_SHIELD)
+				else if((unitid == Assault.UNIT_SMALL_SHIELD
+						|| unitid == Assault.UNIT_LARGE_SHIELD
+						|| unitid == Assault.UNIT_SMALL_PLANET_SHIELD
+						|| unitid == Assault.UNIT_LARGE_PLANET_SHIELD)
 						&& units.getCurQuantity() > 0)
 				{
 					return units;
@@ -176,7 +202,7 @@ public class Party
 			Units primaryUnits = getPrimaryTargetUnits(primaryTargetUnitid);
 			return primaryUnits != null ? primaryUnits : units;
 		}
-		
+
 		public void removeAllRockets()
 		{
 			for(Participant p : participants)
@@ -184,7 +210,7 @@ public class Party
 				p.removeAllRockets();
 			}
 		}
-		
+
 		public void removeFleet()
 		{
 			for(Participant p : participants)
@@ -192,7 +218,7 @@ public class Party
 				p.removeFleet();
 			}
 		}
-		
+
 		public void setupArtefactBonus()
 		{
 			for(Participant p : participants)
@@ -200,11 +226,12 @@ public class Party
 				p.setupArtefactBonus();
 			}
 		}
-		
+
 		public void updateActiveUnits()
 		{
 			activeUnitsMap.clear();
-			activeFleetUnits.clear();
+            activeUnits.clear();
+			// activeFleetUnits.clear();
 			activeDefenseUnits.clear();
 			turnAtterUnits.clear();
 
@@ -215,16 +242,18 @@ public class Party
 					if(units.getQuantity() > 0)
 					{
 						addMapUnits(units);
-						if(units.getUnitid() != Assault.UNIT_INTERCEPTOR_ROCKET 
-								&& units.getUnitid() != Assault.UNIT_INTERPLANETARY_ROCKET)
+                        int unitid = units.getUnitid();
+						if(unitid != Assault.UNIT_INTERCEPTOR_ROCKET
+								&& unitid != Assault.UNIT_INTERPLANETARY_ROCKET)
 						{
+                            activeUnits.add(units);
 							if(units.getType() == Assault.UNIT_TYPE_FLEET)
 							{
-								activeFleetUnits.add(units);
+								// activeFleetUnits.add(units);
 							}
 							else
 							{
-								activeDefenseUnits.add(units);							
+								activeDefenseUnits.add(units);
 							}
 							int damage = units.getAttack0() + units.getAttack1() + units.getAttack2();
 							if(damage > 0){
@@ -235,7 +264,7 @@ public class Party
 				}
 			}
 		}
-		
+
 		public void finishTurn()
 		{
 			for(Participant participant : participants)
@@ -243,7 +272,7 @@ public class Party
 				for(Units units : participant.getUnits())
 				{
 					units.finishTurn(); // Remove exploded ships
-					
+
 					if(participant.isAttacker())
 					{
 						Assault.attackerShipsDestroyed += units.getFiredDiff() - units.getQuantityDiff();
@@ -256,7 +285,7 @@ public class Party
 			}
 			updateActiveUnits();
 		}
-		
+
 		public void calculateLost()
 		{
 			for(Participant participant : participants)
@@ -265,7 +294,7 @@ public class Party
 
 				Assault.debrisMetal += participant.getDebrisMetal();
 				Assault.debrisSilicon += participant.getDebrisSilicon();
-				
+
 				if(participant.isAttacker())
 				{
 					Assault.atterLostMetal += participant.getLostMetal();
@@ -280,7 +309,7 @@ public class Party
 				}
 			}
 		}
-		
+
 		public void finish()
 		{
 			for(Participant participant : participants)
@@ -288,7 +317,7 @@ public class Party
 				participant.finish();
 			}
 		}
-		
+
 		public int getLostUnits()
 		{
 			int lostUnits = 0;
@@ -299,20 +328,20 @@ public class Party
 			return lostUnits;
 		}
 	}
-	
+
 	private PartySide attacker = new PartySide();
 	private PartySide defender = new PartySide();
-	
+
 	public List<Participant> getAttackers()
 	{
 		return attacker.participants;
 	}
-	
+
 	public List<Participant> getDefenders()
 	{
 		return defender.participants;
 	}
-	
+
 	public void addParticipant(Participant participant)
 	{
 		if(participant.isAttacker())
@@ -324,72 +353,74 @@ public class Party
 			defender.participants.add(participant);
 		}
 	}
-	
+
 	public int getAttersNumber()
 	{
 		return attacker.participants.size();
 	}
-	
+
 	public int getDefendersNumber()
 	{
 		return defender.participants.size();
 	}
-	
+
 	public int getAtterLostUnits()
 	{
 		return attacker.getLostUnits();
 	}
-	
+
 	public int getDefenderLostUnits()
 	{
 		return defender.getLostUnits();
 	}
-	
+
 	public Participant getRandomAtter()
 	{
 		return attacker.participants.get(Assault.randExclude(attacker.participants.size()));
 	}
-	
+
 	public Participant getRandomDefender()
 	{
 		return defender.participants.get(Assault.randExclude(defender.participants.size()));
 	}
-	
+
 	public boolean atterHasUnits()
 	{
-		return attacker.activeFleetUnits.size() > 0 || attacker.activeDefenseUnits.size() > 0
-				|| atterHasRockets();
+		// return attacker.activeFleetUnits.size() > 0 || attacker.activeDefenseUnits.size() > 0 || atterHasRockets();
+		return attacker.activeUnits.size() > 0 || atterHasRockets();
 	}
-	
+
 	public boolean atterHasRockets()
 	{
 		return attacker.activeUnitsMap.get(Assault.UNIT_INTERPLANETARY_ROCKET) != null;
 	}
-	
+
 	public boolean atterHasRocketsOnly()
 	{
 		return attacker.activeUnitsMap.size() == 1 && atterHasRockets();
 	}
-	
+
 	public boolean atterHasTargets()
 	{
-		return defender.activeFleetUnits.size() > 0 || defender.activeDefenseUnits.size() > 0;
+		// return defender.activeFleetUnits.size() > 0 || defender.activeDefenseUnits.size() > 0;
+        return defender.activeUnits.size() > 0;
 	}
-	
+
 	public boolean defenderHasUnits()
 	{
-		return defender.activeFleetUnits.size() > 0 || defender.activeDefenseUnits.size() > 0 
-				|| (atterHasRockets() && defenderHasRockets());
+		// return defender.activeFleetUnits.size() > 0 || defender.activeDefenseUnits.size() > 0 || (atterHasRockets() && defenderHasRockets());
+		return defender.activeUnits.size() > 0 || (atterHasRockets() && defenderHasRockets());
 	}
-	
+
 	public boolean defenderHasRockets()
 	{
 		return defender.activeUnitsMap.get(Assault.UNIT_INTERCEPTOR_ROCKET) != null;
 	}
-	
+
 	public boolean defenderHasTargets()
 	{
-		return attacker.activeFleetUnits.size() > 0 || attacker.activeDefenseUnits.size() > 0;
+		// return attacker.activeFleetUnits.size() > 0 || attacker.activeDefenseUnits.size() > 0;
+		return attacker.activeUnits.size() > 0;
 	}
 
 	public void sideAttack(boolean isAtterAttack)
@@ -415,41 +446,43 @@ public class Party
 			{
 				unitsAttack(p.getAtterRockets(), p.getAtterRockets().getQuantity());
 				// p.getAtterRockets().decTurnAtterQuantity( p.getAtterRockets().getQuantity() );
-				
+
 				p.setAtterRockets(null);
 			}
 		}
 		while(atterSide.turnAtterUnits.weight > 0)
 		{
 			Units units = atterSide.getRandomAtterUnits();
-			unitsAttack(units, 1);
-			units.decTurnAtterQuantity(1);
-			atterSide.turnAtterUnits.weight -= units.getWeight();			
+            int turnAtterQuantity = units.getTurnAtterQuantity();
+            int attackQuantity = Math.max(1, turnAtterQuantity / 1000);
+			unitsAttack(units, attackQuantity);
+			units.decTurnAtterQuantity(attackQuantity);
+			atterSide.turnAtterUnits.weight -= units.getWeight() * attackQuantity;
 		}
 	}
-	
-	
+
+
 	public void unitsAttack(Units units, int quantity)
 	{
 		/*
 		Assault.updateAssault("[unitsAttack] unitid: "+units.getUnitid()
 				+ ", quant: "+quantity);
 		*/
-		
+
 		Participant participant = units.getParticipant();
 		// double attackMissFactor = participant.getAttackMissFactor();
 		int primaryTargetUnitid = participant.getPrimaryTargetUnitid();
-		
-		boolean isAttacker = participant.isAttacker();		
+
+		boolean isAttacker = participant.isAttacker();
 		PartySide defenderSide = isAttacker ? defender : attacker;
-		
+
 		int unitid = units.getUnitid();
 		// int quantity = units.getQuantity();
 		for(int i = 0; i < quantity; i++)
 		{
 			Units targetUnits = defenderSide.getPrimaryTargetUnitsFor(unitid, primaryTargetUnitid, true);
 			if(targetUnits == null) // all destroyed
-			{					
+			{
 				// Add turn values
 				int damage = units.getAttack0() + units.getAttack1() + units.getAttack2();
 				Assault.addFireStat(isAttacker, unitid, Assault.UNIT_NOTHING, 0 /*units.getAttack()*/, false);
@@ -495,21 +528,21 @@ public class Party
 
 					Assault.addFireStat(isAttacker, unitid, targetUnits.getUnitid(), units.getShell() /*getAttack()*/, true);
 					Assault.addFireStat(!isAttacker, targetUnits.getUnitid(), unitid, units.getShell(), true);
-					
+
 					Assault.updateAssault("[unitsAttack] IP_ROCKET is destroyed by INT_ROCKET");
-					
+
 					continue;
-				}				
+				}
 				Assault.defenderShots++;
 				Assault.defenderPower += units.getShell();
 				targetUnits.firedDestroy(1);
-				
+
 				// Assault.addFireStat(unitid, targetUnits.getUnitid(), units.getShell(), true);
 				Assault.addFireStat(!isAttacker, targetUnits.getUnitid(), Assault.UNIT_NOTHING, 0 /*units.getShell()*/, false);
-				
+
 				targetUnits = newTargetUnits;
 			}
-			
+
 			// boolean isPrimaryTarget = targetUnits.getUnitid() == primaryTargetUnitid;
 			if(unitid == Assault.UNIT_INTERPLANETARY_ROCKET)
 			{
@@ -526,9 +559,9 @@ public class Party
 					Assault.defenderShots++;
 					Assault.defenderPower += damage;
 				}
-				
+
 				Assault.updateAssault("[unitsAttack] IP_ROCKET attack: "+damage);
-				
+
 				for(;;)
 				{
 					// damage -= targetUnits.processDamage(units); // unitid, damage, 1.0, 0); // attackMissFactor);
@@ -538,9 +571,9 @@ public class Party
 					{
 						break;
 					}
-					
+
 					Units newTargetUnits = defenderSide.getPrimaryTargetUnitsFor(unitid, primaryTargetUnitid, false);
-					if(newTargetUnits != null 
+					if(newTargetUnits != null
 							&& newTargetUnits != targetUnits
 							&& newTargetUnits.getCurQuantity() > 0
 							&& newTargetUnits.getUnitid() != Assault.UNIT_INTERCEPTOR_ROCKET)
@@ -548,7 +581,7 @@ public class Party
 						targetUnits = newTargetUnits;
 						continue;
 					}
-					
+
 					if(targetUnits.getCurQuantity() <= 0)
 					{
 						break;
@@ -575,16 +608,16 @@ public class Party
 						Assault.defenderShots++;
 						Assault.defenderPower += damage;
 					}
-				
+
 					// targetUnits.processDamage(units); // unitid, units.getAttack(), attackMissFactor);
 					units.processAttack(targetUnits);
 					if(rapidFire <= 0 || Assault.randDouble(1, 100) >= rapidChance) // targetUnits.getCurQuantity() <= 0)
 					{
 						break;
 					}
-					
+
 					Units newTargetUnits = defenderSide.getPrimaryTargetUnitsFor(unitid, primaryTargetUnitid, false);
-					if(newTargetUnits != null 
+					if(newTargetUnits != null
 							&& newTargetUnits != targetUnits
 							&& newTargetUnits.getUnitid() != Assault.UNIT_INTERCEPTOR_ROCKET)
 					{
@@ -616,10 +649,10 @@ public class Party
 						Assault.defenderShots++;
 						Assault.defenderPower += damage;
 					}
-				
+
 					// targetUnits.processDamage(units); // unitid, units.getAttack(), attackMissFactor);
 					units.processAttack(targetUnits);
-					/* if(rapidFire <= 0 || Assault.randDouble(0, 100) > rapidChance 
+					/* if(rapidFire <= 0 || Assault.randDouble(0, 100) > rapidChance
 							|| targetUnits.getCurQuantity() <= 0)
 					{
 						break;
@@ -628,17 +661,17 @@ public class Party
 			}
 		}
 	}
-	
+
 	public void finishTurn()
 	{
 		PartySide horizSide = defender;
 		PartySide vertSide = attacker;
-		
+
 		boolean isHorizAttacker = horizSide == attacker;
 		boolean isVertAttacker = !isHorizAttacker;
-		
+
 		int horizUnitsNumber = 0;
-		int vertUnitsNumber = 0;
+		// int vertUnitsNumber = 0;
 		boolean summaryFound = false;
 		boolean nothingFound = false;
 		for(StatUnit u : Assault.statUnits)
@@ -679,19 +712,19 @@ public class Party
 				}
 				u.vertExists = u.vertUnitsNumber > 0;
 			}
-			
+
 			horizUnitsNumber += u.horizExists ? 1 : 0;
-			vertUnitsNumber += u.vertExists ? 1 : 0;
+			// vertUnitsNumber += u.vertExists ? 1 : 0;
 		}
 
 		Assault.fireStatBuf.setLength(0);
-		
+
 		if(true)
 		{
 			double attackerDamage = 0;
 			double defenderDamage = 0;
-			
-			Assault.fireStatBuf.append("<br />\n");			
+
+			Assault.fireStatBuf.append("<br />\n");
 			Assault.fireStatBuf.append("<table class='atable'>");
 
 			Assault.fireStatBuf.append("<tr>");
@@ -706,7 +739,7 @@ public class Party
 
 						FireStat stat = Assault.getFireStat(true, u.unitid, Assault.UNIT_SUMMARY);
 						attackerDamage += stat != null ? stat.damage : 0;
-						
+
 						stat = Assault.getFireStat(false, u.unitid, Assault.UNIT_SUMMARY);
 						defenderDamage += stat != null ? stat.damage : 0;
 					}
@@ -746,7 +779,7 @@ public class Party
 								tip = i > 0 ? "BMAT_DEFENDER_ALL_SHOTS" : "BMAT_ATTER_ALL_SHOTS";
 							}
 							buf.append("<td class='"+td_class+"' style='text-align:right' title='{lang}"+tip+"{/lang}'>");
-							buf.append(Assault.decFormatter.format(stat.hit));					
+							buf.append(Assault.decFormatter.format(stat.hit));
 							buf.append("</td>");
 
 							if(u.unitid != Assault.UNIT_SUMMARY)
@@ -758,7 +791,7 @@ public class Party
 								tip = i > 0 ? "BMAT_DEFENDER_ALL_DAMAGE" : "BMAT_ATTER_ALL_DAMAGE";
 							}
 							buf.append("<td class='"+td_class+" rep_quantity_diff' style='text-align:center' title='{lang}"+tip+"{/lang}'>");
-							buf.append(Assault.decFormatter.format(stat.damage));					
+							buf.append(Assault.decFormatter.format(stat.damage));
 							buf.append("</td>");
 
 							if(u.unitid != Assault.UNIT_SUMMARY)
@@ -783,21 +816,21 @@ public class Party
 			Assault.fireStatBuf.append("</table>");
 		}
 
-		Assault.fireStatBuf.append("<br />\n");			
+		Assault.fireStatBuf.append("<br />\n");
 		Assault.fireStatBuf.append("<table class='atable battle_matrix battle_matrix_turn_"+Assault.battleTurnsNumber+"'>");
-		
+
 		Assault.fireStatBuf.append("<tr>");
 		Assault.fireStatBuf.append("<th>{lang}"+(vertSide == attacker ? "ATTACKER" : "DEFENDER") + "{/lang}</th>");
 		Assault.fireStatBuf.append("<td colspan='"+(horizUnitsNumber*3 - (summaryFound ? 1 : 0) - (nothingFound ? 1 : 0))+"'>&nbsp</td>");
 		Assault.fireStatBuf.append("</tr>");
-		
+
 		for(StatUnit vertUnit : Assault.statUnits)
 		{
 			if(!vertUnit.vertExists)
 			{
 				continue;
 			}
-			
+
 			Assault.fireStatBuf.append("<tr class='bmat_row bmat_row_"+(isVertAttacker ? "atter" : "defender")+" bmat_row_unit_"+vertUnit.idName()+"'>");
 			Assault.fireStatBuf.append("<th rowspan='2'"+(vertUnit.unitid == Assault.UNIT_NOTHING ? " title='{lang}UNIT_NOTHING_INFO{/lang}'" : "")+">");
 			Assault.fireStatBuf.append("{lang}"+vertUnit.name+"{/lang}");
@@ -814,7 +847,7 @@ public class Party
 				}
 				FireStat stat1 = Assault.getFireStat(isVertAttacker, vertUnit.unitid, horizUnit.unitid);
 				FireStat stat2 = Assault.getFireStat(isHorizAttacker, horizUnit.unitid, vertUnit.unitid);
-				
+
 				for(int i = 0; i < 2; i++)
 				{
 					String td_class = "bmat_col bmat_col_unit_"+horizUnit.unitid;
@@ -829,15 +862,15 @@ public class Party
 					{
 						tip = "{embedded2[" + tip_prefix + "_HIT]}" + tip_aim + "{/embedded2}";
 						buf.append("<td class='"+td_class+"' style='text-align:right' title='"+tip+"'>");
-						buf.append(Assault.decFormatter.format(stat.hit));					
+						buf.append(Assault.decFormatter.format(stat.hit));
 						buf.append("</td>");
 
 						if(horizUnit.unitid != Assault.UNIT_SUMMARY || !summaryFound)
 						{
 							tip = "{embedded2[" + tip_prefix + "_PERCENT]}" + tip_aim + "{/embedded2}";
 							buf.append("<td class='"+td_class+"' style='text-align:center' title='"+tip+"'>");
-							FireStat sumStat = i > 0 
-								? Assault.getFireStat(isHorizAttacker, horizUnit.unitid, Assault.UNIT_SUMMARY) 
+							FireStat sumStat = i > 0
+								? Assault.getFireStat(isHorizAttacker, horizUnit.unitid, Assault.UNIT_SUMMARY)
 								: Assault.getFireStat(isVertAttacker, vertUnit.unitid, Assault.UNIT_SUMMARY);
 							if(sumStat != null && sumStat.hit > 0)
 							{
@@ -850,7 +883,7 @@ public class Party
 							}
 							buf.append("</td>");
 						}
-						
+
 						if(horizUnit.unitid != Assault.UNIT_NOTHING || !nothingFound)
 						{
 							tip = "{embedded2[" + tip_prefix + "_DAMAGE]}" + tip_aim + "{/embedded2}";
@@ -863,7 +896,7 @@ public class Party
 					}
 					else
 					{
-						int cols = (horizUnit.unitid != Assault.UNIT_SUMMARY || !summaryFound) 
+						int cols = (horizUnit.unitid != Assault.UNIT_SUMMARY || !summaryFound)
 							&& (horizUnit.unitid != Assault.UNIT_NOTHING || !nothingFound) ? 3 : 2;
 						buf.append("<td class='"+td_class+"' colspan='"+cols+"'>-</td>");
 					}
@@ -875,7 +908,7 @@ public class Party
 			Assault.fireStatBuf.append(Assault.fireStatRowBuf);
 			Assault.fireStatBuf.append("</tr>");
 		}
-		
+
 		Assault.fireStatBuf.append("<tr>");
 		// Assault.fireStatBuf.append("<th>&nbsp</th>");
 		Assault.fireStatBuf.append("<th align='right'>{lang}"+(horizSide == attacker ? "ATTACKER" : "DEFENDER") + "{/lang}</th>");
@@ -893,37 +926,37 @@ public class Party
 		Assault.fireStatBuf.append("</tr>");
 
 		Assault.fireStatBuf.append("</table>");
-		
+
 		Assault.resetFireStats();
 
 		attacker.finishTurn();
 		defender.finishTurn();
 	}
-	
+
 	public void removeAllRockets()
 	{
 		attacker.removeAllRockets();
 		defender.removeAllRockets();
 	}
-	
+
 	public void removeFleet()
 	{
 		attacker.removeFleet();
 		defender.removeFleet();
 	}
-	
+
 	public void setupArtefactBonus()
 	{
 		attacker.setupArtefactBonus();
 		defender.setupArtefactBonus();
 	}
-	
+
 	public void updateActiveUnits()
 	{
 		attacker.updateActiveUnits();
 		defender.updateActiveUnits();
 	}
-	
+
 	public void finish()
 	{
 		Assault.debrisMetal = 0;
@@ -934,14 +967,14 @@ public class Party
 		Assault.defenderLostMetal = 0;
 		Assault.defenderLostSilicon = 0;
 		Assault.defenderLostHydrogen = 0;
-		
+
 		Assault.haulMetal = 0;
 		Assault.haulSilicon = 0;
 		Assault.haulHydrogen = 0;
 
 		attacker.calculateLost();
 		defender.calculateLost();
-		
+
 		if(Assault.assaultResult == 1 && !Assault.isRocketAttack)
 		{
 			List<Participant> nextList = new ArrayList<Participant>();
@@ -965,10 +998,10 @@ public class Party
 				}
 				List<Participant> temp = participants;
 				participants = nextList;
-				nextList = temp;				
+				nextList = temp;
 			}
 		}
-		
+
 		attacker.finish();
 		defender.finish();
 	}

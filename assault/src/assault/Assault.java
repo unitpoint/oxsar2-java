@@ -77,7 +77,9 @@ public class Assault
 	static final int UNIT_LANCER_SHIP = 102; // mode - 3
 	static final int UNIT_BALLISTICS_TECH = 103; // mode - 2
 	static final int UNIT_MASKING_TECH = 104; // mode - 2
-	
+    static final int UNIT_SMALL_PLANET_SHIELD = 354; // mode - 4
+    static final int UNIT_LARGE_PLANET_SHIELD = 355; // mode - 4
+
 	static final int UNIT_BATTLE_SHELL_POWER = 316; // mode - 6
 	static final int UNIT_BATTLE_SHIELD_POWER = 317; // mode - 6
 	static final int UNIT_BATTLE_ATTACK_POWER = 318; // mode - 6
@@ -90,13 +92,13 @@ public class Assault
 	static final int UNIT_TYPE_FLEET = 3;
 	static final int UNIT_TYPE_DEFENSE = 4;
 	static final int UNIT_TYPE_ARTEFACT = 6;
-	
+
 	static final int RES_UPDATE_ATTACKER = 24;
-	
+
 	static final boolean USE_OGAME_RAPIDFIRE_STYLE = false;
-	
+
 	static final int BATTLE_MAX_TURNS = 6;
-	
+
 	static final double [] ADV_TECH_FACTOR = { 1, 1.1, 1.2 };
 	static final double [][] ADV_TECH_MATRIX =
 								{
@@ -104,7 +106,7 @@ public class Assault
 									{ 0.00, 1.00, 2.00 },
 									{ 2.00, 0.00, 1.00 },
 								};
-	
+
 	public static final int MIN_FREE_CAPACITY = 0;
 
 	public static long startTime;
@@ -129,27 +131,27 @@ public class Assault
 	public static List<StatUnit> statUnits = new ArrayList<StatUnit>();
 	public static Party party;
 	public static int assaultResult;
-	
+
 	public static int atterShellPowerArtefacts = 0;
 	public static int defenderShellPowerArtefacts = 0;
 
 	public static int atterShieldPowerArtefacts = 0;
 	public static int defenderShieldPowerArtefacts = 0;
-	
+
 	public static int atterAttackPowerArtefacts = 0;
 	public static int defenderAttackPowerArtefacts = 0;
-	
+
 	public static double planetMetal = 0;
 	public static double planetSilicon = 0;
 	public static double planetHydrogen = 0;
 	public static int planetDiameter = 0;
-	
+
 	public static double startBattleAtterPower = 0;
 	public static double startBattleDefenderPower = 0;
-	
+
 	public static int atterBattleExperience = 0;
 	public static int defenderBattleExperience = 0;
-	
+
 	public static boolean targetMoon = false;
 	public static int targetBuildingid = 0;
 	public static int targetBuildingLevel = 0;
@@ -159,24 +161,24 @@ public class Assault
 	public static boolean targetDestroyed = false;
 	public static boolean attackerFleetsExplode = false;
 	public static String targetBuildingName = "";
-	
+
 	public static int battleTurnsNumber = 0;
-	
+
 	public static int attackerShots;
 	public static int defenderShots;
-	
+
 	public static double attackerPower;
 	public static double defenderPower;
-	
+
 	public static double attackerShield;
 	public static double defenderShield;
-	
+
 	public static double attackerShellDestroyed;
 	public static double defenderShellDestroyed;
-	
+
 	public static int attackerShipsDestroyed;
 	public static int defenderShipsDestroyed;
-	
+
 	public static StringBuffer assaultReportBuf = new StringBuffer();
 	public static StringBuffer quantityBuf = new StringBuffer();
 	public static StringBuffer assaultQuantityBuf = new StringBuffer();
@@ -188,18 +190,18 @@ public class Assault
 	public static StringBuffer maskingBuf = new StringBuffer();
 	public static StringBuffer fireStatBuf = new StringBuffer();
 	public static StringBuffer fireStatRowBuf = new StringBuffer();
-	
+
 	public static double atterLostMetal = 0;
 	public static double atterLostSilicon = 0;
 	public static double atterLostHydrogen = 0;
-	
+
 	public static double defenderLostMetal = 0;
 	public static double defenderLostSilicon = 0;
 	public static double defenderLostHydrogen = 0;
-	
+
 	public static double debrisMetal = 0;
 	public static double debrisSilicon = 0;
-	
+
 	// public final static long USE_MAX_INT_VALUE = 2000000000;
 	public final static int MOON_PERCENT_PER_RES = 200000;
 	public final static int MOON_GUARANTEED_PERCENT_PER_RES = 10000000;
@@ -251,7 +253,7 @@ public class Assault
 		}
 		return 0;
 	}
-	
+
 	public static void addStatUnit(int unitid, String name)
 	{
 		for(StatUnit unit : statUnits)
@@ -263,7 +265,7 @@ public class Assault
 		}
 		statUnits.add(new StatUnit(unitid, name));
 	}
-	
+
 	public static void addFireStat(boolean isAttacker, int src_unit, int target_unit, int damage, boolean isDestroyed)
 	{
 		int key = src_unit * UNIT_SUMMARY * 100 + target_unit * 10 + (isAttacker ? 1 : 0);
@@ -286,18 +288,18 @@ public class Assault
 			addFireStat(isAttacker, UNIT_SUMMARY, target_unit, damage, isDestroyed);
 		}
 	}
-	
+
 	public static FireStat getFireStat(boolean isAtter, int src_unit, int target_unit)
 	{
 		int key = src_unit * UNIT_SUMMARY * 100 + target_unit * 10 + (isAtter ? 1 : 0);
 		return fireStatMap.get(key);
 	}
-	
+
 	public static void resetFireStats()
 	{
 		fireStatMap.clear();
 	}
-	
+
 	private static String parseArg(String s)
 	{
 		if(s.length() >= 2 && (s.charAt(0) == '\'' || s.charAt(0) == '"')
@@ -310,7 +312,7 @@ public class Assault
 
 	/**
 	 * @param args
-	 * @throws SQLException 
+	 * @throws SQLException
 	 * @throws SQLException
 	 */
 	public static void main(String[] args) throws SQLException
@@ -320,12 +322,12 @@ public class Assault
 		dfs.setDecimalSeparator(',');
 		decFormatter = new DecimalFormat(",###", dfs);
 		oneDigitFormatter = new DecimalFormat(",###.#", dfs);
-		
+
 		startTime = System.currentTimeMillis();
 
 		debugmode = false; // On: Will proceed database updates. Off: Will
 		// output report in console and create report file.
-		
+
 		if (args.length >= 6) {
 			dbhost = parseArg(args[0]);
 			username = parseArg(args[1]);
@@ -348,7 +350,7 @@ public class Assault
 		// Random key to protect the access
 		key = generateKey(4);
 		key2 = generateKey(4);
-		
+
 		addStatUnit(UNIT_SUMMARY, "UNIT_SUMMARY");
 		addStatUnit(UNIT_NOTHING, "UNIT_NOTHING");
 
@@ -362,9 +364,9 @@ public class Assault
 		try {
 			updateAssault("[read planets res] before");
 
-			String sql ="SELECT a.time, a.accomplished " 
+			String sql ="SELECT a.time, a.accomplished "
 				+ ", a.target_moon, a.target_buildingid, a.building_level "
-				+ ", a.building_metal, a.building_silicon, a.building_hydrogen " 
+				+ ", a.building_metal, a.building_silicon, a.building_hydrogen "
 				+ ", a.advanced_system, a.moon_allow_type "
 				+ ", b.name as building_name, p.planetid "
 				// + ", p.metal, p.silicon, p.hydrogen "
@@ -377,7 +379,7 @@ public class Assault
 				// + " LEFT JOIN " + tablePrefix + "galaxy g ON a.planetid = g.planetid"
 				// + " LEFT JOIN " + tablePrefix + "galaxy gm ON a.planetid = g.moonid"
 				+ " WHERE a.assaultid = '" + assaultid + "' LIMIT 1";
-			
+
 			Statement stmt = Database.createStatement();
 			rs = stmt.executeQuery(sql);
 			if (rs.next()) {
@@ -438,7 +440,7 @@ public class Assault
 				"pp.planetid, pp.preloaded, pp.consumption, pp.target_unitid, " +
 				"pp.add_gun_tech, pp.add_shield_tech, pp.add_shell_tech, " +
 				"pp.add_ballistics_tech, pp.add_masking_tech, " +
-				"pp.add_laser_tech, pp.add_ion_tech, pp.add_plasma_tech, " + 
+				"pp.add_laser_tech, pp.add_ion_tech, pp.add_plasma_tech, " +
 				"IFNULL(g.galaxy, gm.galaxy) as galaxy, " +
 				"IFNULL(g.system, gm.system) as system, " +
 				"IFNULL(g.position, gm.position) as position, "
@@ -480,9 +482,9 @@ public class Assault
 						participant.setPreloaded(rs.getDouble("preloaded"));
 						participant.setPrimaryTargetUnitid(rs.getInt("target_unitid"));
 						participant.loadShips();
-						
-						if(participant.getUnits().size() > 0 
-								|| participant.getArtefacts().size() > 0 
+
+						if(participant.getUnits().size() > 0
+								|| participant.getArtefacts().size() > 0
 								|| (type == Participant.DEFENDER && party.getDefendersNumber() == 0))
 						{
 							party.addParticipant(participant);
@@ -492,7 +494,7 @@ public class Assault
 			}
 			party.setupArtefactBonus();
 			party.updateActiveUnits();
-			
+
 			isRocketAttack = party.atterHasRocketsOnly();
 			if(isRocketAttack)
 			{
@@ -513,7 +515,7 @@ public class Assault
 		}
 
 		// addStatUnit(UNIT_SUMMARY, "UNIT_SUMMARY");
-		
+
 		assaultReportBuf.setLength(0);
 		assaultReportBuf.append("<div class=\"center\">");
 		assaultReportBuf
@@ -526,7 +528,7 @@ public class Assault
 										.getInstance(), Calendar
 										.getInstance(), Calendar
 										.getInstance()));
-		
+
 		if(targetMoon)
 		{
 			assaultReportBuf.append("{lang}START_REPORT_TARGET_MOON{/lang}<br />\n<br />\n");
@@ -592,16 +594,16 @@ public class Assault
 				if(isRocketAttack && turn == 1)
 				{
 					// battleTurnsNumber++;
-					
+
 					party.sideAttack(true);
 					party.finishTurn();
-					
+
 					// startBattleAtterPower = atterPower;
 					// startBattleDefenderPower = defenderPower;
 				}
 				break;
 			}
-			
+
 			battleTurnsNumber++;
 
 			if(!isRocketAttack)
@@ -629,23 +631,23 @@ public class Assault
 				assaultReportBuf.append("{lang}ATTACKER{/lang} "
 						+ "{user["+participant.getUserid()+"]}"+participant.getUsername() + "{/user} " + coords
 						+ "<br />\n");
-				
+
 				printTechLevels(participant);
 				printArtefacts(participant);
 				/*
 				assaultReportBuf.append(String.format("{lang}GUN_POWER{/lang}: %.0f&#037; ",
-						participant.getAttackLevel() * 10.0));						
+						participant.getAttackLevel() * 10.0));
 				assaultReportBuf.append(String.format("{lang}SHIELD_POWER{/lang}: %.0f&#037; ",
-						participant.getShieldLevel() * 10.0));				
+						participant.getShieldLevel() * 10.0));
 				assaultReportBuf.append(String.format("{lang}ARMORING{/lang}: %.0f&#037; ",
 						participant.getShellLevel() * 10.0));
 				assaultReportBuf.append(String.format("{lang}BALLISTICS_POWER{/lang}: %d ",
-						participant.getBallisticsLevel()));						
+						participant.getBallisticsLevel()));
 				assaultReportBuf.append(String.format("{lang}MASKING_POWER{/lang}: %d ",
-						participant.getMaskingLevel()));						
+						participant.getMaskingLevel()));
 				assaultReportBuf.append("<br />\n");
 				*/
-				
+
 				assaultReportBuf.append("<table class=\"atable\"><tr>");
 				assaultReportBuf.append("<th>&nbsp;</th>"); // {lang}TYPE{/lang}</th>");
 
@@ -688,28 +690,28 @@ public class Assault
 				assaultReportBuf.append("{lang}DEFENDER{/lang} "
 						+ "{user["+participant.getUserid()+"]}"+participant.getUsername() + "{/user} " + coords
 						+ "<br />\n");
-				
+
 				printArtefacts(participant);
 				printTechLevels(participant);
 				/*
 				assaultReportBuf.append(String.format("{lang}GUN_POWER{/lang}: %.0f&#037; ",
-						participant.getAttackLevel() * 10.0));						
+						participant.getAttackLevel() * 10.0));
 				assaultReportBuf.append(String.format("{lang}SHIELD_POWER{/lang}: %.0f&#037; ",
-						participant.getShieldLevel() * 10.0));				
+						participant.getShieldLevel() * 10.0));
 				assaultReportBuf.append(String.format("{lang}ARMORING{/lang}: %.0f&#037; ",
 						participant.getShellLevel() * 10.0));
 				assaultReportBuf.append(String.format("{lang}BALLISTICS_POWER{/lang}: %d ",
-						participant.getBallisticsLevel()));						
+						participant.getBallisticsLevel()));
 				assaultReportBuf.append(String.format("{lang}MASKING_POWER{/lang}: %d ",
-						participant.getMaskingLevel()));						
+						participant.getMaskingLevel()));
 				assaultReportBuf.append("<br />\n");
 				*/
-				
+
 				// if(turn == 1)
 				{
 					assaultReportBuf.append("{hide_text}");
 				}
-				
+
 				assaultReportBuf.append("<table class=\"atable\"><tr>");
 				assaultReportBuf.append("<th>&nbsp;</th>"); // {lang}TYPE{/lang}</th>");
 
@@ -730,13 +732,13 @@ public class Assault
 				{
 					assaultReportBuf.append("{/hide_text}");
 				}
-				
+
 				/* if(party.defenderHasTargets())
 				{
 					participant.processAttack();
 				} */
 			}
-			
+
 			if(party.atterHasTargets() || party.defenderHasTargets())
 			{
 				party.sideAttack(true);
@@ -746,7 +748,7 @@ public class Assault
 			updateAssault("[turn] finishing");
 
 			// Get values of this turn
-			
+
 			party.finishTurn(); // Renew the party: Reload shields and
 								// remove ships
 			// with explosion flag
@@ -754,7 +756,7 @@ public class Assault
 			assaultReportBuf.append("<p><b>{lang}FIGHT{/lang}</b></p>\n");
 
 			assaultReportBuf.append("<table class=\"atable\">");
-			
+
 			assaultReportBuf.append("<tr>");
 			assaultReportBuf.append("<th>&nbsp;</th>");
 			assaultReportBuf.append("<th>{img}FIGHT_SHOTS_NUMBER{/img}</th>");
@@ -784,10 +786,10 @@ public class Assault
 			assaultReportBuf.append("<td title='{lang}FIGHT_SHELL_DESTROYED{/lang}'>"+formatPower(attackerShellDestroyed, defenderPower)+"</td>");
 			assaultReportBuf.append("<td title='{lang}FIGHT_UNITS_DESTROYED{/lang}'>"+decFormatter.format(attackerShipsDestroyed)+"</th>");
 			assaultReportBuf.append("</tr>");
-			
+
 			assaultReportBuf.append("</table>");
-			
-			assaultReportBuf.append("<br />\n");			
+
+			assaultReportBuf.append("<br />\n");
 			assaultReportBuf
 					.append(String
 							.format(
@@ -802,7 +804,7 @@ public class Assault
 									decFormatter.format(defenderShots),
 									decFormatter.format(defenderPower),
 									decFormatter.format(attackerShield)));
-			
+
 			if(turn == 1)
 			{
 				startBattleAtterPower = attackerPower;
@@ -811,7 +813,7 @@ public class Assault
 			assaultReportBuf.append("{battle_matrix_turn_"+turn+"}");
 			assaultReportBuf.append(fireStatBuf);
 			assaultReportBuf.append("{/battle_matrix_turn_"+turn+"}");
-			
+
 			// Check if attacker or defender has still fleet to battle
 			boolean atterNoUnits = !party.atterHasUnits();
 			boolean defenderNoUnits = !party.defenderHasUnits();
@@ -836,46 +838,46 @@ public class Assault
 			// double atterExperience = Math.min(20, Math.max(0.1, startBattleDefenderPower / startBattleAtterPower)) * battleTurnsNumber;
 			// double defenderExperience = Math.min(20, Math.max(0.1, startBattleAtterPower / startBattleDefenderPower)) * battleTurnsNumber;
 
-			// startBattleAtterPower - мощность огня атакующего в первом раунде
-			// startBattleDefenderPower - мощность огня обороняющегося в первом раунде
-			
+			// startBattleAtterPower - attacker power at the first turn
+			// startBattleDefenderPower - defender power at the first turn
+
 			double battleTurnsCoefficient = Math.pow(battleTurnsNumber, 1.1) / BATTLE_MAX_TURNS;
-			
+
 			double atterExperience = (Math.atan(startBattleDefenderPower / startBattleAtterPower * 1.5 - 1.5)+1)*0.4*3*battleTurnsCoefficient + 1;
 			double defenderExperience = (Math.atan(startBattleAtterPower / startBattleDefenderPower * 1.5 - 1.5)+1)*0.4*3*battleTurnsCoefficient + 1;
-			
-			if(assaultResult == 1) // победил атакующий
+
+			if(assaultResult == 1) // attacker won
 			{
 				atterExperience *= 3;
 			}
-			else if(assaultResult == 2) // победил обороняющийся
+			else if(assaultResult == 2) // defender won
 			{
 				defenderExperience *= 3;
 			}
-			else // ничья
+			else // draw
 
 			{
 				atterExperience *= 1.5;
 				defenderExperience *= 1.7;
 			}
-			
-			// масштаб битвы
+
+			// battle power
 			double battlePower = Math.sqrt(startBattleAtterPower * startBattleDefenderPower) / 1000000;
 			double battlePowerCoefficient = (Math.atan(battlePower*10*0.2-1.6)+1)*0.4*19+1;
-			
+
 			if(planetid == 0)
 			{
 				battlePowerCoefficient *= 0.5;
 			}
-			
+
 			atterExperience *= battlePowerCoefficient;
 			defenderExperience *= battlePowerCoefficient;
-			
-			// итоговый опыт
+
+			// result experience
 			atterBattleExperience = (int) Math.round(atterExperience);
 			defenderBattleExperience = (int) Math.round(defenderExperience);
 		}
-		
+
 		// try to destroy building
 		StringBuffer targetDestroyBuf = null;
 		if (assaultResult == 1 && targetMoon)
@@ -892,11 +894,11 @@ public class Assault
 			}
 			double chance = 0;
 			int minDeathStarsNumber = (int) Math.floor(planetDiameter / 1000.0);
-			if(deathStarsNumber >= minDeathStarsNumber) 
+			if(deathStarsNumber >= minDeathStarsNumber)
 			{
-				// 2*((10-2)^0,45) = 5,098242509277
-				// 2*((100-2)^0,45) = 15,7427909962
-				// 2*((200-2)^0,45) = 21,60375936825
+				// 2*((10-2)^0,45) = 5,098242509277
+				// 2*((100-2)^0,45) = 15,7427909962
+				// 2*((200-2)^0,45) = 21,60375936825
 				chance = clampVal(2 * Math.pow(deathStarsNumber - minDeathStarsNumber + 1, 0.45), 0, 20);
 			}
 			if(chance > 0 && randDouble(1, 100) <= chance)
@@ -934,7 +936,7 @@ public class Assault
 		else if ((assaultResult == 1 || assaultResult == 0) && targetBuildingid != 0) {
 			updateAssault("[DESTROY] try to destroy "+targetBuildingName+" "+targetBuildingLevel);
 			targetDestroyBuf = new StringBuffer();
-			
+
 			int deathStarsDestroyedNumber = 0;
 			boolean isBuildingExist = party.getDefendersNumber() > 0;
 			if(isBuildingExist && !isBattleSimulation)
@@ -965,14 +967,14 @@ public class Assault
 						unitsList.add(units);
 					}
 				}
-				// 5*((10)^0,3) = 9,976311574844
-				// 5*((100)^0,3) = 19,90535852767
-				// 5*((200)^0,3) = 24,50637094697
+				// 5*((10)^0,3)пїЅ=пїЅ9,976311574844
+				// 5*((100)^0,3)пїЅ=пїЅ19,90535852767
+				// 5*((200)^0,3)пїЅ=пїЅ24,50637094697
 				double targetDestroyChance = clampVal(5 * Math.pow(deathStarsNumber, 0.3), 0, 25);
 				if(randDouble(1, 100) <= targetDestroyChance)
 				{
 					targetDestroyed = true;
-					
+
 					targetDestroyBuf.append("{lang}TARGET_BUILDING_DESTROYED{/lang}");
 					targetDestroyBuf.append(" {lang}" + targetBuildingName + "{/lang}");
 					if(targetBuildingLevel > 0)
@@ -980,16 +982,16 @@ public class Assault
 						targetDestroyBuf.append(" " + targetBuildingLevel);
 					}
 					targetDestroyBuf.append("<br />\n");
-					
+
 					targetDestroyBuf.append("{embedded2[DESTROYED_BUILDING_PLANET_METAL_AND_SILICON]}");
 					targetDestroyBuf.append("("+decFormatter.format(targetBuildingMetal)+")");
 					targetDestroyBuf.append("("+decFormatter.format(targetBuildingSilicon)+")");
 					targetDestroyBuf.append("{/embedded2}");
 					targetDestroyBuf.append("<br />\n");
-					
+
 					planetMetal += targetBuildingMetal;
 					planetSilicon += targetBuildingSilicon;
-					
+
 					targetDestroyChance *= 2;
 				}
 				double deathStarsDestroyChance = 100 - clampVal(targetDestroyChance*4, 50, 90);
@@ -1006,7 +1008,7 @@ public class Assault
 					if(destroyed > 0)
 					{
 						units.destroyAfterTurnFinished(destroyed);
-						deathStarsDestroyedNumber += destroyed;						
+						deathStarsDestroyedNumber += destroyed;
 					}
 				}
 			}
@@ -1027,11 +1029,11 @@ public class Assault
 				targetDestroyBuf.append("{/embedded}<br />\n");
 			}
 		}
-		
+
 		// try to grasp loser ships
 		updateAssault("[GRASP] try to grasp loser ships");
-		if ((assaultResult == 1 || assaultResult == 2) 
-				&& !isRocketAttack 
+		if ((assaultResult == 1 || assaultResult == 2)
+				&& !isRocketAttack
 				&& !attackerFleetsExplode
 				&& !(targetMoon && targetDestroyed))
 		{
@@ -1040,7 +1042,7 @@ public class Assault
 
 			for (Participant participant : loser) {
 				for (Units units : participant.getUnits()) {
-					if (units.getType() == Assault.UNIT_TYPE_FLEET 
+					if (units.getType() == Assault.UNIT_TYPE_FLEET
 							&& units.getTotalDestroyed() > 0)
 					{
 						int unitsNumber = Math.min(units.getTotalDestroyed(), units.getStartBattleQuantity() / 2);
@@ -1049,12 +1051,12 @@ public class Assault
 						double graspPercent = randDouble(minPercent, maxPercent);
 
 						unitsNumber = Math.max(1, unitsNumber);
-						
+
 						int grasped = (int) (unitsNumber * graspPercent / 100);
 						if(grasped > 0)
 						{
 							for (int i = 0; i < grasped; i++) {
-								Participant target = assaultResult == 1 
+								Participant target = assaultResult == 1
 									? party.getRandomAtter()
 									: party.getRandomDefender();
 								target.addGraspedUnits(units, 1);
@@ -1088,7 +1090,7 @@ public class Assault
 		{
 			assaultReportBuf.append("<p><b>{lang}SUMMARY{/lang}</b></p>\n");
 		}
-		
+
 		for (Participant participant : party.getAttackers()) {
 			String coords = "";
 			if (!participant.isAliens()) {
@@ -1151,7 +1153,7 @@ public class Assault
 				{
 					assaultReportBuf.append("{hide_text}");
 				}
-				
+
 				assaultReportBuf
 						.append("<table class='atable'><tr><th>&nbsp;</th>");
 
@@ -1171,7 +1173,7 @@ public class Assault
 				}
 			}
 		}
-		
+
 		party.finish();
 
 		if(attackerFleetsExplode || (targetMoon && targetDestroyed))
@@ -1180,17 +1182,17 @@ public class Assault
 			debrisSilicon = 0;
 			// planetMetal += haulMetal;
 			// planetSilicon += haulSilicon;
-			// planetHydrogen += haulHydrogen; 
+			// planetHydrogen += haulHydrogen;
 			haulMetal = 0;
 			haulSilicon = 0;
 			haulHydrogen = 0;
 		}
-		
+
 		// Assault result out steam
 		updateAssault("[assault] Assault result out steam");
 
 		assaultReportBuf.append("<br />\n");
-		
+
 		/* if(targetDestroyBuf != null)
 		{
 			// assaultReportBuf.append("<br />\n");
@@ -1219,7 +1221,7 @@ public class Assault
 				break;
 			}
 		}
-		
+
 		/*
 		System.out.println("PRE atterLostMetal: "+atterLostMetal);
 		System.out.println("PRE atterLostSilicon: "+atterLostSilicon);
@@ -1229,7 +1231,7 @@ public class Assault
 		System.out.println("PRE defenderLostHydrogen: "+defenderLostHydrogen);
 		System.out.println("PRE debrisMetal: "+debrisMetal);
 		System.out.println("PRE debrisSilicon: "+debrisSilicon);
-		
+
 		atterLostMetal = clampVal(atterLostMetal, -maxIntValue, maxIntValue);
 		atterLostSilicon = clampVal(atterLostSilicon, -maxIntValue, maxIntValue);
 		atterLostHydrogen = clampVal(atterLostHydrogen, -maxIntValue, maxIntValue);
@@ -1239,11 +1241,11 @@ public class Assault
 		debrisMetal = clampVal(debrisMetal, -maxIntValue, maxIntValue);
 		debrisSilicon = clampVal(debrisSilicon, -maxIntValue, maxIntValue);
 		*/
-		
+
 		defenderLostMetal += targetBuildingMetal;
 		defenderLostSilicon += targetBuildingSilicon;
 		defenderLostHydrogen += targetBuildingHydrogen;
-		
+
 		System.out.println("atterLostMetal: "+decFormatter.format(atterLostMetal));
 		System.out.println("atterLostSilicon: "+decFormatter.format(atterLostSilicon));
 		System.out.println("atterLostHydrogen: "+decFormatter.format(atterLostHydrogen));
@@ -1252,7 +1254,7 @@ public class Assault
 		System.out.println("defenderLostHydrogen: "+decFormatter.format(defenderLostHydrogen));
 		System.out.println("debrisMetal: "+decFormatter.format(debrisMetal));
 		System.out.println("debrisSilicon: "+decFormatter.format(debrisSilicon));
-		
+
 		// Lost units and debris out stream
 		assaultReportBuf.append("{embedded4[ATTACKER_LOST_RES_4]}");
 		assaultReportBuf.append("("+decFormatter.format(atterLostMetal+atterLostSilicon+atterLostHydrogen)+")");
@@ -1283,7 +1285,7 @@ public class Assault
 			}
 			assaultReportBuf.append("<br /><br />\n");
 		}
-		
+
 		if (debrisMetal > 0 || debrisSilicon > 0) {
 			assaultReportBuf.append("{embedded2[DEBRIS_METAL_AND_SILICON]}");
 			assaultReportBuf.append("("+decFormatter.format(debrisMetal)+")");
@@ -1302,7 +1304,7 @@ public class Assault
 		// Get chance of moon appearance
 		moonChance = 0;
 		boolean USE_MOON_ARTEFACT_STYLE = true;
-		if((!ismoon || USE_MOON_ARTEFACT_STYLE) 
+		if((!ismoon || USE_MOON_ARTEFACT_STYLE)
 			&& !isRocketAttack
 			&& planetid != 0
 			&& !attackerFleetsExplode
@@ -1313,28 +1315,28 @@ public class Assault
 			{
 				moonChance = 0;
 
-				int effectExperience = Math.min(atterBattleExperience, defenderBattleExperience); 
+				int effectExperience = Math.min(atterBattleExperience, defenderBattleExperience);
 				if(effectExperience >= MOON_EXP_START_CHANCE)
 				{
 					int experienceMoonChance = (int) Math.round(Math.pow(effectExperience, 0.8));
 					int debrisMoonChance = (int) ((debrisMetal + debrisSilicon) / MOON_PERCENT_PER_RES);
 					moonChance = Math.min(experienceMoonChance, debrisMoonChance);
-					
+
 					int attackerLostUnits = party.getAtterLostUnits();
 					int defenderLostUnits = party.getDefenderLostUnits();
 					int lostUnits = Math.min(attackerLostUnits, defenderLostUnits);
-					moonChance = Math.min(moonChance, lostUnits); 
-				}				
+					moonChance = Math.min(moonChance, lostUnits);
+				}
 
 				int moonStartChance = MOON_START_CHANCE;
-				int guaranteedDebrisMoonChance = (int) ((debrisMetal + debrisSilicon) / MOON_GUARANTEED_PERCENT_PER_RES);					
+				int guaranteedDebrisMoonChance = (int) ((debrisMetal + debrisSilicon) / MOON_GUARANTEED_PERCENT_PER_RES);
 				moonChance = Math.max(moonChance, guaranteedDebrisMoonChance);
 				moonChance = clampVal(moonChance, 0, MOON_MAX_CHANCE);
 				if(guaranteedDebrisMoonChance > 0 && moonStartChance > guaranteedDebrisMoonChance)
 				{
 					moonStartChance = guaranteedDebrisMoonChance;
 				}
-				
+
 				if (moonChance >= moonStartChance)
 				{
 					if(moonAllowType == 2)
@@ -1370,7 +1372,7 @@ public class Assault
 			}
 			else if(atterBattleExperience >= MOON_EXP_START_CHANCE && defenderBattleExperience >= MOON_EXP_START_CHANCE)
 			{
-				moonChance = (int)clampVal((debrisMetal + debrisSilicon) / MOON_PERCENT_PER_RES 
+				moonChance = (int)clampVal((debrisMetal + debrisSilicon) / MOON_PERCENT_PER_RES
 						+ Assault.randDouble(-2, 2), 0, MOON_MAX_CHANCE);
 				if (moonChance > 0)
 				{
@@ -1380,7 +1382,7 @@ public class Assault
 					if (randInt(1, 100) <= moonChance) {
 						moon = true;
 						assaultReportBuf.append("<strong>{lang}MOON{/lang}</strong><br />\n");
-	
+
 						double capacity = MOON_PERCENT_PER_RES * MOON_MAX_CHANCE;
 						if ((debrisMetal + debrisSilicon) > capacity) {
 							while (capacity > MIN_FREE_CAPACITY) {
@@ -1428,17 +1430,17 @@ public class Assault
 			}
 			assaultReportBuf.append("<br />\n");
 		}
-		
+
 		System.out.println("startBattleAtterPower: " + decFormatter.format(startBattleAtterPower));
 		System.out.println("startBattleDefenderPower: " + decFormatter.format(startBattleDefenderPower));
-		
+
 		if(atterBattleExperience > 0 || defenderBattleExperience > 0)
 		{
 			System.out.println("atterBattleExperience: " + atterBattleExperience);
 			System.out.println("defenderBattleExperience: " + defenderBattleExperience);
-			
+
 			assaultReportBuf.append("<br />\n");
-			
+
 			assaultReportBuf.append("{embedded[ATTACKER_EXPERIENCE]}");
 			assaultReportBuf.append(decFormatter.format(atterBattleExperience));
 			assaultReportBuf.append("{/embedded}<br />\n");
@@ -1447,7 +1449,7 @@ public class Assault
 			assaultReportBuf.append(decFormatter.format(defenderBattleExperience));
 			assaultReportBuf.append("{/embedded}");
 		}
-		
+
 		assaultReportBuf.append("</div>");
 
 		updateAssault("[assault] finishing, rep len: " + assaultReportBuf.length());
@@ -1481,7 +1483,7 @@ public class Assault
 
 		System.out.println("Finished");
 	}
-	
+
 	public static void printArtefacts(Participant participant)
 	{
 		if(participant.getArtefacts().size() > 0)
@@ -1499,13 +1501,13 @@ public class Assault
 			assaultReportBuf.append("<br />\n");
 		}
 	}
-	
+
 	public static String getStringAutoValue(double level, boolean forceInt)
 	{
 		if(forceInt){ // || Math.abs((int)level - level) < 0.1){
 			return String.format("%.0f", level);
 		}
-		
+
 		return oneDigitFormatter.format(level);
 	}
 
@@ -1513,86 +1515,86 @@ public class Assault
 	{
 		return getStringAutoValue(level, false);
 	}
-	
+
 	public static void printAddTech(double level, boolean isPercent)
 	{
 		if(level != 0)
 		{
-			assaultReportBuf.append(String.format("<span class='%s'><nowrap>( %s%s%s )</nowrap></span> ", 
+			assaultReportBuf.append(String.format("<span class='%s'><nowrap>( %s%s%s )</nowrap></span> ",
 					level > 0 ? "rep_quantity_grasped" : "rep_quantity_diff",
 					level > 0 ? "+" : "",
 					getStringAutoValue(level, isPercent),
-					isPercent ? "&#037" : ""));						
+					isPercent ? "&#037" : ""));
 		}
 	}
-	
+
 	public static void printTechLevels(Participant participant)
 	{
 		assaultReportBuf.append(String.format("{lang}GUN_POWER{/lang}: %.0f&#037; ",
-				participant.getAttackLevel() * 10.0));	
+				participant.getAttackLevel() * 10.0));
 		printAddTech(participant.getAttackAddLevel() * 10, true);
-		
+
 		assaultReportBuf.append(String.format("&nbsp; {lang}SHIELD_POWER{/lang}: %.0f&#037; ",
-				participant.getShieldLevel() * 10.0));				
+				participant.getShieldLevel() * 10.0));
 		printAddTech(participant.getShieldAddLevel() * 10, true);
-		
+
 		assaultReportBuf.append(String.format("&nbsp; {lang}SHELL_POWER{/lang}: %.0f&#037; ",
 				participant.getShellLevel() * 10.0));
 		printAddTech(participant.getShellAddLevel() * 10, true);
-		
+
 		assaultReportBuf.append(String.format("&nbsp; {lang}BALLISTICS_TECH{/lang}: %s ",
 				getStringAutoValue(participant.getBallisticsLevel())));
 		printAddTech(participant.getBallisticsAddLevel(), false);
-		
+
 		assaultReportBuf.append(String.format("&nbsp; {lang}MASKING_TECH{/lang}: %s ",
-				getStringAutoValue(participant.getMaskingLevel())));						
+				getStringAutoValue(participant.getMaskingLevel())));
 		printAddTech(participant.getMaskingAddLevel(), false);
-		
+
 		if(isBattleAdvanced)
 		{
 			assaultReportBuf.append(String.format("<br />\n{lang}LASER_TECH{/lang}: %d ",
-					participant.getLaserLevel()));						
-			printAddTech(participant.getLaserAddLevel(), false);			
+					participant.getLaserLevel()));
+			printAddTech(participant.getLaserAddLevel(), false);
 
 			assaultReportBuf.append(String.format("&nbsp; {lang}ION_TECH{/lang}: %d ",
-					participant.getIonLevel()));						
-			printAddTech(participant.getIonAddLevel(), false);			
+					participant.getIonLevel()));
+			printAddTech(participant.getIonAddLevel(), false);
 
 			assaultReportBuf.append(String.format("&nbsp; {lang}PLASMA_TECH{/lang}: %d ",
-					participant.getPlasmaLevel()));						
-			printAddTech(participant.getPlasmaAddLevel(), false);			
+					participant.getPlasmaLevel()));
+			printAddTech(participant.getPlasmaAddLevel(), false);
 
-			assaultReportBuf.append("<br />\n");			
+			assaultReportBuf.append("<br />\n");
 			assaultReportBuf.append(String.format("{lang}ADV_GUN_POWER{/lang}: &nbsp; %.0f&#037; &nbsp; %.0f&#037; &nbsp; %.0f&#037;",
 					participant.getAttackFactor(0) * 100.0,
 					participant.getAttackFactor(1) * 100.0,
 					participant.getAttackFactor(2) * 100.0
 					));
-			
-			assaultReportBuf.append("<br />\n");			
+
+			assaultReportBuf.append("<br />\n");
 			assaultReportBuf.append(String.format("{lang}ADV_SHIELD_POWER{/lang}: &nbsp; %.0f&#037; &nbsp; %.0f&#037; &nbsp; %.0f&#037;",
 					participant.getShieldFactor(0) * 100.0,
 					participant.getShieldFactor(1) * 100.0,
 					participant.getShieldFactor(2) * 100.0
 					));
 		}
-		
+
 		assaultReportBuf.append("<br />\n");
 	}
-	
+
 	public static void printParticipant(Participant participant, int turn)
 	{
 		resetTurnBuffers();
-		
+
 		boolean frontSet = false;
 		int minFront = 0, maxFront = 0;
-		
+
 		boolean ballisticsSet = false;
 		double minBallistics = 0, maxBallistics = 0;
-		
+
 		boolean maskingSet = false;
 		double minMasking = 0, maxMasking = 0;
-		
+
 		for (Units units : participant.getUnits())
 		{
 			updateAssault("[makeParticipantTurn] unitid: "+units.getUnitid());
@@ -1683,12 +1685,12 @@ public class Assault
 				{
 					gunsBuf.append("<td>-</td>");
 				}
-				
+
 				if(units.getUnitid() != UNIT_INTERCEPTOR_ROCKET && units.getUnitid() != UNIT_INTERPLANETARY_ROCKET)
 				{
 					if(!isBattleAdvanced)
 					{
-						shieldsBuf.append("<td>" + decFormatter.format(units.getBaseShield())); 
+						shieldsBuf.append("<td>" + decFormatter.format(units.getBaseShield()));
 					}
 					else
 					{
@@ -1696,17 +1698,17 @@ public class Assault
 						if(turn == 1) // || turn < 0)
 						{
 							shieldsBuf.append(String.format("%s<br />%s<br />%s<br />\n",
-									decFormatter.format(units.getShield0()),	
-									decFormatter.format(units.getShield1()),	
-									decFormatter.format(units.getShield2())	
+									decFormatter.format(units.getShield0()),
+									decFormatter.format(units.getShield1()),
+									decFormatter.format(units.getShield2())
 								));
 						}
-						shieldsBuf.append("<span class='rep_quantity_damage_low'>(" + decFormatter.format(units.getBaseShield()) + ")</span>"); 
+						shieldsBuf.append("<span class='rep_quantity_damage_low'>(" + decFormatter.format(units.getBaseShield()) + ")</span>");
 					}
 					shieldsBuf.append("</td>");
-					
+
 					shellsBuf.append("<td>" + decFormatter.format(units.getShell()) + "</td>");
-					
+
 					frontBuf.append("<td>" + decFormatter.format(units.getFront()) + "</td>");
 					if(!frontSet)
 					{
@@ -1725,7 +1727,7 @@ public class Assault
 					shellsBuf.append("<td>-</td>");
 					frontBuf.append("<td>-</td>");
 				}
-				
+
 				ballisticsBuf.append("<td>" + getStringAutoValue(units.getBallisticsLevel()) + "</td>");
 				if(!ballisticsSet)
 				{
@@ -1737,7 +1739,7 @@ public class Assault
 					minBallistics = Math.min(minBallistics, units.getBallisticsLevel());
 					maxBallistics = Math.max(maxBallistics, units.getBallisticsLevel());
 				}
-				
+
 				maskingBuf.append("<td>" + getStringAutoValue(units.getMaskingLevel()) + "</td>");
 				if(!maskingSet)
 				{
@@ -1749,7 +1751,7 @@ public class Assault
 					minMasking = Math.min(minMasking, units.getMaskingLevel());
 					maxMasking = Math.max(maxMasking, units.getMaskingLevel());
 				}
-				
+
 				if(units.getStartBattleQuantity() > 0)
 				{
 					int alivePercent = Math.min(100, (int)(units.getQuantity() * 100.0 / units.getStartBattleQuantity()));
@@ -1841,16 +1843,16 @@ public class Assault
 
 		shellsBuf.setLength(0);
 		shellsBuf.append("</tr><tr><th>{lang}ARMOR{/lang}</th>");
-		
+
 		frontBuf.setLength(0);
 		frontBuf.append("</tr><tr><th>{lang}FRONT{/lang}</th>");
-		
+
 		ballisticsBuf.setLength(0);
 		ballisticsBuf.append("</tr><tr><th>{lang}BALLISTICS_POWER{/lang}</th>");
-		
+
 		maskingBuf.setLength(0);
 		maskingBuf.append("</tr><tr><th>{lang}MASKING_POWER{/lang}</th>");
-		
+
 		assaultQuantityBuf.setLength(0);
 		assaultQuantityBuf.append("</tr><tr><th></th>");
 	}
@@ -1885,7 +1887,7 @@ public class Assault
 			updateAssault("[finish] Subtract haul from planet, sql: " + sql);
 			try {
 				stmt.executeUpdate(sql);
-				
+
 				sql = "INSERT INTO " + tablePrefix +"res_log " +
 						" (type, planetid, userid, metal, silicon, hydrogen, result_metal, result_silicon, result_hydrogen, ownerid)" +
 						" SELECT "+RES_UPDATE_ATTACKER+", planetid, userid, " +
@@ -1895,8 +1897,8 @@ public class Assault
 								"metal, silicon, hydrogen, '"+assaultid+"' " +
 						" FROM " + tablePrefix +"planet " +
 						" WHERE planetid = '" + planetid + "'";
-				stmt.executeUpdate(sql);		
-				
+				stmt.executeUpdate(sql);
+
 			} catch (SQLException e) {
 				System.err.println(sql);
 				e.printStackTrace();
@@ -1909,7 +1911,7 @@ public class Assault
 				+ assaultReportBuf.toString().replaceAll("'", "''")
 				+ "', `key` = '" + key
 				+ "', `key2` = '" + key2
-				+ "', `result` = '" + assaultResult + "', moonchance = '" + moonChance 
+				+ "', `result` = '" + assaultResult + "', moonchance = '" + moonChance
 				+ "', moon = '" + moonCreated
 				+ "', target_destroyed = '" + (targetDestroyed ? 1 : 0)
 				+ "', attacker_explode = '" + (attackerFleetsExplode ? 1 : 0)
@@ -1971,7 +1973,7 @@ public class Assault
 	{
 		updateAssault(s, false);
 	}
-	
+
 	public static String formatPower(double i, double sum)
 	{
 		return decFormatter.format(i) + (sum > 0 ? " <sup><span class='rep_quantity_damage_low'>" + Math.round(i * 100 / sum) +"%</span></sup>" : "");
@@ -1989,7 +1991,7 @@ public class Assault
 		}
 		return sKey.toLowerCase();
 	}
-	
+
 	public static int clampVal(int i, int a, int b)
 	{
 		if(i < a) return a;
@@ -2010,7 +2012,7 @@ public class Assault
 		if(i > b) return b;
 		return i;
 	}
-	
+
 	public static double clampDbVal(double  i)
 	{
 		return Math.floor(i);
@@ -2023,7 +2025,7 @@ public class Assault
 		int size = max - min;
 		return size > 0 ? min + random.nextInt(size+1) : min;
 	}
-	
+
 	public static int randExclude(int maxExclude)
 	{
 		return maxExclude > 0 ? random.nextInt(maxExclude) : maxExclude;
