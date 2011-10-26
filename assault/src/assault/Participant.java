@@ -29,10 +29,10 @@ public class Participant {
 	private int plasmaLevel = 0;
 	private int shipyardLevel = 0;
 	private int defenseFactoryLevel = 0;
-	
+
 	private double [] attackFactors = { 1, 0, 0 };
 	private double [] shieldFactors = { 1, 0, 0 };
-	
+
 	// private int attackAccuracyLevel = 0;
 	// private double attackMissFactor = 1;
 	private Map<Integer, Units> unitsMap = new HashMap<Integer, Units>();
@@ -62,7 +62,7 @@ public class Participant {
 	// This is important to calculate the right haul
 	private double consumption = 0;
 	private double preloaded = 0; // prestored resources for this fleet.
-	
+
 	private int addAttackLevel = 0;
 	private int addShieldLevel = 0;
 	private int addShellLevel = 0;
@@ -108,7 +108,7 @@ public class Participant {
 	public List<Units> getUnits() {
 		return unitsList;
 	}
-	
+
 	public Units getUnits(int unitid)
 	{
 		return unitsMap.get(unitid);
@@ -146,9 +146,9 @@ public class Participant {
 	public void setSystem(int system) {
 		this.system = system;
 	}
-	
-	public void setAddLevels(int addAttackLevel, int addShieldLevel, int addShellLevel, 
-			int addBallisticsLevel, int addMaskingLevel, 
+
+	public void setAddLevels(int addAttackLevel, int addShieldLevel, int addShellLevel,
+			int addBallisticsLevel, int addMaskingLevel,
 			int addLaserLevel, int addIonLevel, int addPlasmaLevel)
 	{
 		if(this.isAliens)
@@ -278,11 +278,11 @@ public class Participant {
 	public int getShipyardLevel() {
 		return shipyardLevel;
 	}
-	
+
 	public int getDefenseFactoryLevel() {
 		return defenseFactoryLevel;
 	}
-	
+
 	public int getLaserLevel() {
 		return Math.max(0, laserLevel + addLaserLevel);
 	}
@@ -306,7 +306,7 @@ public class Participant {
 	public int getPlasmaAddLevel() {
 		return addPlasmaLevel;
 	}
-	
+
 	public double getAttackFactor(int i)
 	{
 		return attackFactors[i];
@@ -324,7 +324,7 @@ public class Participant {
 	public double getLostPoints() {
 		return lostPoints;
 	}
-	
+
 	public int getLostUnits()
 	{
 		return lostUnits;
@@ -365,8 +365,8 @@ public class Participant {
 			rs = stmt.executeQuery("SELECT r2u.level, r2u.buildingid "
 					+ " FROM " + Assault.getTablePrefix()
 					+ "research2user r2u " + " WHERE r2u.buildingid in ("
-					+ Assault.UNIT_GUN_TECH + ", " + Assault.UNIT_SHIELD_TECH + ", " + Assault.UNIT_SHELL_TECH + ", "					
-					+ Assault.UNIT_BALLISTICS_TECH + ", " + Assault.UNIT_MASKING_TECH + ", " 
+					+ Assault.UNIT_GUN_TECH + ", " + Assault.UNIT_SHIELD_TECH + ", " + Assault.UNIT_SHELL_TECH + ", "
+					+ Assault.UNIT_BALLISTICS_TECH + ", " + Assault.UNIT_MASKING_TECH + ", "
 					+ Assault.UNIT_LASER_TECH + ", " + Assault.UNIT_ION_TECH + ", " + Assault.UNIT_PLASMA_TECH + ", "
 					+ Assault.UNIT_SHIPYARD + ", " + Assault.UNIT_DEFENSE_FACTORY
 					+ ") AND r2u.userid = '"
@@ -442,7 +442,7 @@ public class Participant {
 				System.err.println(e.getMessage());
 			}
 		}
-		
+
 		if(isAttacker()){
 			// shipyardLevel = 0;
 			defenseFactoryLevel = 0;
@@ -455,9 +455,9 @@ public class Participant {
 	public void loadShips() {
 		if(Assault.isBattleAdvanced)
 		{
-			int [] techList = { 
-					(int) Math.round(getLaserLevel() * Assault.ADV_TECH_FACTOR[0]), 
-					(int) Math.round(getIonLevel() * Assault.ADV_TECH_FACTOR[1]), 
+			int [] techList = {
+					(int) Math.round(getLaserLevel() * Assault.ADV_TECH_FACTOR[0]),
+					(int) Math.round(getIonLevel() * Assault.ADV_TECH_FACTOR[1]),
 					(int) Math.round(getPlasmaLevel() * Assault.ADV_TECH_FACTOR[2]) };
 			int techMax = Math.max(techList[0], Math.max(techList[1], techList[2]));
 			int [] techPick = { 0, 0, 0 };
@@ -472,22 +472,22 @@ public class Participant {
 			double techSum = techPick[0] + techPick[1] + techPick[2];
 			if(techSum > 0)
 			{
-				attackFactors[0] = techPick[0] / techSum + techList[0] / 100.0; 
-				attackFactors[1] = techPick[1] / techSum + techList[1] / 100.0; 
-				attackFactors[2] = techPick[2] / techSum + techList[2] / 100.0; 
+				attackFactors[0] = techPick[0] / techSum + techList[0] / 100.0;
+				attackFactors[1] = techPick[1] / techSum + techList[1] / 100.0;
+				attackFactors[2] = techPick[2] / techSum + techList[2] / 100.0;
 			}
 			else
 			{
-				attackFactors[0] = 1.0 / 3 + techList[0] / 100.0; 
-				attackFactors[1] = 1.0 / 3 + techList[1] / 100.0; 
-				attackFactors[2] = 1.0 / 3 + techList[2] / 100.0; 
+				attackFactors[0] = 1.0 / 3 + techList[0] / 100.0;
+				attackFactors[1] = 1.0 / 3 + techList[1] / 100.0;
+				attackFactors[2] = 1.0 / 3 + techList[2] / 100.0;
 			}
-			
+
 			for(int i = 0; i < 3; i++)
 			{
-				shieldFactors[i] = attackFactors[0] * Assault.ADV_TECH_MATRIX[i][0] 
+				shieldFactors[i] = attackFactors[0] * Assault.ADV_TECH_MATRIX[i][0]
                                      + attackFactors[1] * Assault.ADV_TECH_MATRIX[i][1]
-                                     + attackFactors[2] * Assault.ADV_TECH_MATRIX[i][2];					                                                                 	
+                                     + attackFactors[2] * Assault.ADV_TECH_MATRIX[i][2];
 			}
 		}
 		/*
@@ -543,21 +543,21 @@ public class Participant {
 				int unitFront = rs.getInt(isAttacker ? "attacker_front" : "front");
 				double unitBallistics = rs.getInt(isAttacker ? "attacker_ballistics" : "ballistics") + getBallisticsLevel();
 				double unitMasking = rs.getInt(isAttacker ? "attacker_masking" : "masking") + getMaskingLevel();
-				
-				int attack0 = (int) Math.ceil(unitAttack * attackFactors[0]); 
-				int attack1 = (int) Math.ceil(unitAttack * attackFactors[1]); 
-				int attack2 = (int) Math.ceil(unitAttack * attackFactors[2]); 
 
-				int shield0 = (int) Math.ceil(unitShield * shieldFactors[0]); 
-				int shield1 = (int) Math.ceil(unitShield * shieldFactors[1]); 
-				int shield2 = (int) Math.ceil(unitShield * shieldFactors[2]); 
-				
-				Units units = new Units(this, userid, unitid, 
-						rs.getString("name"), 
-						attack0, attack1, attack2, 
+				int attack0 = (int) Math.ceil(unitAttack * attackFactors[0]);
+				int attack1 = (int) Math.ceil(unitAttack * attackFactors[1]);
+				int attack2 = (int) Math.ceil(unitAttack * attackFactors[2]);
+
+				int shield0 = (int) Math.ceil(unitShield * shieldFactors[0]);
+				int shield1 = (int) Math.ceil(unitShield * shieldFactors[1]);
+				int shield2 = (int) Math.ceil(unitShield * shieldFactors[2]);
+
+				Units units = new Units(this, userid, unitid,
+						rs.getString("name"),
+						attack0, attack1, attack2,
 						shield0, shield1, shield2,
 						unitShell,
-						unitFront, unitBallistics, unitMasking, quantity, 
+						unitFront, unitBallistics, unitMasking, quantity,
 						rs.getInt("damaged"), rs.getInt("shell_percent"));
 
 				units.setType(rs.getInt("mode"));
@@ -572,17 +572,17 @@ public class Participant {
 				if(units.getType() != Assault.UNIT_TYPE_ARTEFACT)
 				{
 					unitsList.add(units);
-	
+
 					switch (units.getUnitid()) {
 					case Assault.UNIT_INTERCEPTOR_ROCKET:
 						// defenseRockets = units;
 						break;
-	
+
 					case Assault.UNIT_INTERPLANETARY_ROCKET:
 						atterRockets = units;
 						break;
 					}
-	
+
 					Assault.addStatUnit(units.getUnitid(), units.getName());
 				}
 				else
@@ -600,7 +600,7 @@ public class Participant {
 							Assault.defenderShellPowerArtefacts += quantity;
 						}
 						break;
-						
+
 					case Assault.UNIT_BATTLE_SHIELD_POWER:
 						isBattleArtefact = true;
 						if(isAttacker())
@@ -612,7 +612,7 @@ public class Participant {
 							Assault.defenderShieldPowerArtefacts += quantity;
 						}
 						break;
-						
+
 					case Assault.UNIT_BATTLE_ATTACK_POWER:
 						isBattleArtefact = true;
 						if(isAttacker())
@@ -624,6 +624,18 @@ public class Participant {
 							Assault.defenderAttackPowerArtefacts += quantity;
 						}
 						break;
+
+					case Assault.UNIT_BATTLE_NEUTRON_AFFECTOR:
+						isBattleArtefact = true;
+						if(isAttacker())
+						{
+							Assault.atterNeutronAffectorArtefacts += quantity;
+						}
+						else
+						{
+							Assault.defenderNeutronAffectorArtefacts += quantity;
+						}
+						break;
 					}
 					if(isBattleArtefact)
 					{
@@ -631,13 +643,8 @@ public class Participant {
 					}
 				}
 
-				/*
-				 * if(units.getType() == Assault.UNIT_TYPE_FLEET) {
-				 * fleetQuantity += units.getCurQuantity(); }
-				 */
-
 				Assault.updateAssault(String.format("[loadShips] unitid: %d, attack: %d %d %d, shield: %d %d %d, shell: %d, quant: %d",
-						units.getUnitid(), 
+						units.getUnitid(),
 						units.getAttack0(), units.getAttack1(), units.getAttack2(),
 						units.getShield0(), units.getShield1(), units.getShield2(),
 						units.getShell(), units.getCurQuantity()));
@@ -646,21 +653,21 @@ public class Participant {
 			System.err.println(e.getMessage());
 		}
 	}
-	
+
 	public void setupArtefactBonus()
-	{		
+	{
 		for (Units units : unitsList) {
-			units.setupArtefactBonus();			
+			units.setupArtefactBonus();
 		}
 	}
-	
+
 	public void addGraspedUnits(Units srcUnits, int quantity) {
 		Units units = unitsMap.get(srcUnits.getUnitid());
 		if (units == null) {
-			units = new Units(this, userid, srcUnits.getUnitid(), srcUnits.getName(), 
+			units = new Units(this, userid, srcUnits.getUnitid(), srcUnits.getName(),
 					srcUnits.getAttack0(), srcUnits.getAttack1(), srcUnits.getAttack2(),
 					srcUnits.getShield0(), srcUnits.getShield1(), srcUnits.getShield2(),
-					srcUnits.getShell(), srcUnits.getFront(), 
+					srcUnits.getShell(), srcUnits.getFront(),
 					srcUnits.getBallisticsLevel(), srcUnits.getMaskingLevel(),
 					0, 0, 0);
 
@@ -822,11 +829,11 @@ public class Participant {
 		if (capacity <= Assault.MIN_FREE_CAPACITY) {
 			return false;
 		}
-		
+
 		double availMetal = Math.ceil( Math.max(0, (Assault.planetMetal - Assault.haulMetal) / partsNumber) );
 		double availSilicon = Math.ceil( Math.max(0, (Assault.planetSilicon - Assault.haulSilicon) / partsNumber) );
 		double availHydrogen = Math.ceil( Math.max(0, (Assault.planetHydrogen - Assault.haulHydrogen) / partsNumber) );
-		
+
 		if (availMetal == 0 && availSilicon == 0 && availHydrogen == 0) {
 			return false;
 		}
@@ -884,20 +891,20 @@ public class Participant {
 			return false;
 		}
 		// capacity = 0;
-			
+
 		haulMetal += availMetal;
 		// Assault.planetMetal -= availMetal;
-		
+
 		haulSilicon += availSilicon;
 		// Assault.planetSilicon -= availSilicon;
-		
+
 		haulHydrogen += availHydrogen;
 		// Assault.planetHydrogen -= availHydrogen;
-		
+
 		Assault.haulMetal += availMetal;
 		Assault.haulSilicon += availSilicon;
 		Assault.haulHydrogen += availHydrogen;
-		
+
 		return partsNumber > 1;
 	}
 
@@ -928,7 +935,7 @@ public class Participant {
 
 			sql = "UPDATE " + prefix + "assaultparticipant SET "
 					+ " haul_metal = '" + Assault.clampDbVal(haulMetal) + "', "
-					+ " haul_silicon = '" + Assault.clampDbVal(haulSilicon)	+ "', " 
+					+ " haul_silicon = '" + Assault.clampDbVal(haulSilicon)	+ "', "
 					+ " haul_hydrogen = '" + Assault.clampDbVal(haulHydrogen) + "' "
 					+ " WHERE participantid = '" + participantid
 					+ "' AND assaultid = '" + Assault.assaultid
@@ -997,10 +1004,10 @@ public class Participant {
 			}
 
 			try {
-				sql = "UPDATE " + prefix + "user SET " 
-						+ " points = GREATEST(0, points - '" + lostPoints + "') " 
-						+ ", u_points = GREATEST(0, u_points - '" + lostPoints + "') " 
-						+ ", u_count = GREATEST(0, u_count - '" + lostUnits + "') " 
+				sql = "UPDATE " + prefix + "user SET "
+						+ " points = GREATEST(0, points - '" + lostPoints + "') "
+						+ ", u_points = GREATEST(0, u_points - '" + lostPoints + "') "
+						+ ", u_count = GREATEST(0, u_count - '" + lostUnits + "') "
 						+ " WHERE userid = '" + userid + "'";
 				stmt.executeUpdate(sql);
 			} catch (SQLException e) {

@@ -83,6 +83,7 @@ public class Assault
 	static final int UNIT_BATTLE_SHELL_POWER = 316; // mode - 6
 	static final int UNIT_BATTLE_SHIELD_POWER = 317; // mode - 6
 	static final int UNIT_BATTLE_ATTACK_POWER = 318; // mode - 6
+	static final int UNIT_BATTLE_NEUTRON_AFFECTOR = 356; // mode - 6
 
 	static final int UNIT_SUMMARY = 1000;
 
@@ -140,6 +141,9 @@ public class Assault
 
 	public static int atterAttackPowerArtefacts = 0;
 	public static int defenderAttackPowerArtefacts = 0;
+
+	public static int atterNeutronAffectorArtefacts = 0;
+	public static int defenderNeutronAffectorArtefacts = 0;
 
 	public static double planetMetal = 0;
 	public static double planetSilicon = 0;
