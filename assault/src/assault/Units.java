@@ -154,9 +154,9 @@ public class Units
 	}
 	*/
 
-	public int getFullCapacity()
+	public double getFullCapacity()
 	{
-		return capacity * getQuantity();
+		return (double)capacity * getQuantity();
 	}
 	public int getCapacity()
 	{
