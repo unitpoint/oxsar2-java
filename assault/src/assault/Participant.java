@@ -923,23 +923,16 @@ public class Participant {
 		String sql = "";
 
 		// Get haul
-		if (haulMetal > 0 || haulSilicon > 0 || haulHydrogen > 0) // Assault.assaultResult
-																	// == 1 &&
-																	// isAtter())
+		if (haulMetal > 0 || haulSilicon > 0 || haulHydrogen > 0 || capacity > 0)
 		{
-			// haulMetal = Math.floor(haulMetal); haulSilicon =
-			// Math.floor(haulSilicon); haulHydrogen = Math.floor(haulHydrogen);
-			// Assault.haulMetal += haulMetal;
-			// Assault.haulSilicon += haulSilicon;
-			// Assault.haulHydrogen += haulHydrogen;
-
 			sql = "UPDATE " + prefix + "assaultparticipant SET "
+					+ " capacity = '" + Assault.clampDbVal(capacity) + "', "
 					+ " haul_metal = '" + Assault.clampDbVal(haulMetal) + "', "
 					+ " haul_silicon = '" + Assault.clampDbVal(haulSilicon)	+ "', "
 					+ " haul_hydrogen = '" + Assault.clampDbVal(haulHydrogen) + "' "
-					+ " WHERE participantid = '" + participantid
-					+ "' AND assaultid = '" + Assault.assaultid
-					+ "' AND userid = '" + userid + "'";
+					+ " WHERE participantid = '" + participantid + "' "
+                    + "  AND assaultid = '" + Assault.assaultid + "' "
+                    + "  AND userid = '" + userid + "'";
 
 			if (!Assault.debugmode) {
 				try {
