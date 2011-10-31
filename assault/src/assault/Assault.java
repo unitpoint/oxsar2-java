@@ -1343,7 +1343,12 @@ public class Assault
 
 				if (moonChance >= moonStartChance)
 				{
-					if(moonAllowType == 2)
+					if(moonAllowType == 3)
+					{
+						moonChance = 0;
+						assaultReportBuf.append("<br />\n{lang}MOON_ARTEFACT_UNIVERSE_EMPTY{/lang}<br />\n");
+					}
+                    else if(moonAllowType == 2)
 					{
 						moonChance = 0;
 						assaultReportBuf.append("<br />\n{lang}MOON_ARTEFACT_CHANCE_NONE{/lang}<br />\n");
