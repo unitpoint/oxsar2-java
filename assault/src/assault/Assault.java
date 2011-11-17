@@ -896,7 +896,7 @@ public class Assault
 					deathStarsNumber += units.getQuantity();
 				}
 			}
-			double chance = 0;
+			double chance = 0, attackerFleetsExplodeChance = 70;
 			int minDeathStarsNumber = (int) Math.floor(planetDiameter / 1000.0);
 			if(deathStarsNumber >= minDeathStarsNumber)
 			{
@@ -919,7 +919,7 @@ public class Assault
 				planetSilicon = 0;
 				targetDestroyBuf.append("{lang}TARGET_MOON_DESTROYED{/lang}<br />\n");
 			}
-			else if(randDouble(1, 100) <= 70)
+			else if(randDouble(1, 100) <= attackerFleetsExplodeChance)
 			{
 				for (Participant participant : party.getAttackers())
 				{
@@ -936,6 +936,15 @@ public class Assault
 			{
 				targetDestroyBuf.append("{lang}TARGET_MOON_NOT_DESTROYED{/lang}<br />\n");
 			}
+            targetDestroyBuf.append("{embedded[MOON_DESTROY_CHANCE]}");
+            targetDestroyBuf.append(decFormatter.format(chance));
+            targetDestroyBuf.append("{/embedded}<br />\n");
+
+            /*
+            targetDestroyBuf.append("{embedded[ATTACKER_EXPLODE_CHANCE]}");
+            targetDestroyBuf.append(decFormatter.format( (100-chance)*0.01 * attackerFleetsExplodeChance*0.01 * 100 ));
+            targetDestroyBuf.append("{/embedded}<br />\n");
+            */
 		}
 		else if ((assaultResult == 1 || assaultResult == 0) && targetBuildingid != 0) {
 			updateAssault("[DESTROY] try to destroy "+targetBuildingName+" "+targetBuildingLevel);
