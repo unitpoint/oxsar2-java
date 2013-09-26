@@ -420,12 +420,18 @@ public class Units
 		int shellPowerArtefacts;
 		int shieldPowerArtefacts;
 		int attackPowerArtefacts;
+		int shellPower10Artefacts;
+		int shieldPower10Artefacts;
+		int attackPower10Artefacts;
         int neutronAffectorArtefacts;
 		if(participant.isAttacker())
 		{
 			shellPowerArtefacts = Assault.atterShellPowerArtefacts;
 			shieldPowerArtefacts = Assault.atterShieldPowerArtefacts;
 			attackPowerArtefacts = Assault.atterAttackPowerArtefacts;
+			shellPower10Artefacts = Assault.atterShellPower10Artefacts;
+			shieldPower10Artefacts = Assault.atterShieldPower10Artefacts;
+			attackPower10Artefacts = Assault.atterAttackPower10Artefacts;
 			neutronAffectorArtefacts = Assault.atterNeutronAffectorArtefacts;
 		}
 		else
@@ -433,34 +439,39 @@ public class Units
 			shellPowerArtefacts = Assault.defenderShellPowerArtefacts;
 			shieldPowerArtefacts = Assault.defenderShieldPowerArtefacts;
 			attackPowerArtefacts = Assault.defenderAttackPowerArtefacts;
+			shellPower10Artefacts = Assault.defenderShellPower10Artefacts;
+			shieldPower10Artefacts = Assault.defenderShieldPower10Artefacts;
+			attackPower10Artefacts = Assault.defenderAttackPower10Artefacts;
 			neutronAffectorArtefacts = Assault.defenderNeutronAffectorArtefacts;
 		}
 
 		double shellBonusPower = 1;
 		double shieldBonusPower = 1;
-		if(shellPowerArtefacts != 0 || neutronAffectorArtefacts != 0)
+		if(shellPowerArtefacts != 0 || shellPower10Artefacts != 0 || neutronAffectorArtefacts != 0)
 		{
-			shellBonusPower = Math.max(0.1, 1 + 0.1 * shellPowerArtefacts + 10 * neutronAffectorArtefacts);
+			shellBonusPower = Math.max(0.1, 1 + shellPower10Artefacts + 0.1 * shellPowerArtefacts + 10 * neutronAffectorArtefacts);
 			shell = (int) Math.round(shell * shellBonusPower);
 		}
-		if(shieldPowerArtefacts != 0 || neutronAffectorArtefacts != 0)
+		if(shieldPowerArtefacts != 0 || shieldPower10Artefacts != 0 || neutronAffectorArtefacts != 0)
 		{
-			shieldBonusPower = Math.max(0.1, 1 + 0.1 * shieldPowerArtefacts + 10 * neutronAffectorArtefacts);
+			shieldBonusPower = Math.max(0.1, 1 + shieldPower10Artefacts + 0.1 * shieldPowerArtefacts + 10 * neutronAffectorArtefacts);
 			baseShield = (int) Math.round(baseShield * shieldBonusPower);
 			shield0 = (int) Math.round(shield0 * shieldBonusPower);
 			shield1 = (int) Math.round(shield1 * shieldBonusPower);
 			shield2 = (int) Math.round(shield2 * shieldBonusPower);
 		}
-		if(attackPowerArtefacts != 0 || neutronAffectorArtefacts != 0)
+		if(attackPowerArtefacts != 0 || attackPower10Artefacts != 0 || neutronAffectorArtefacts != 0)
 		{
-			double bonusPower = Math.max(0.1, 1 + 0.1 * attackPowerArtefacts + 10 * neutronAffectorArtefacts);
+			double bonusPower = Math.max(0.1, 1 + attackPower10Artefacts + 0.1 * attackPowerArtefacts + 10 * neutronAffectorArtefacts);
 			baseAttack = (int) Math.round(baseAttack * bonusPower);
 			attack0 = (int) Math.round(attack0 * bonusPower);
 			attack1 = (int) Math.round(attack1 * bonusPower);
 			attack2 = (int) Math.round(attack2 * bonusPower);
 		}
 
-		if(shellPowerArtefacts != 0 || shieldPowerArtefacts != 0 || neutronAffectorArtefacts != 0)
+		if(shellPowerArtefacts != 0 || shieldPowerArtefacts != 0
+                || shellPower10Artefacts != 0 || shieldPower10Artefacts != 0
+                || neutronAffectorArtefacts != 0)
 		{
 			for(Unit unit : curDamagedUnits)
 			{

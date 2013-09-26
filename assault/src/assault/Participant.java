@@ -591,48 +591,63 @@ public class Participant {
 					switch (units.getUnitid()) {
 					case Assault.UNIT_BATTLE_SHELL_POWER:
 						isBattleArtefact = true;
-						if(isAttacker())
-						{
+						if(isAttacker()){
 							Assault.atterShellPowerArtefacts += quantity;
-						}
-						else
-						{
+						}else{
 							Assault.defenderShellPowerArtefacts += quantity;
 						}
 						break;
 
 					case Assault.UNIT_BATTLE_SHIELD_POWER:
 						isBattleArtefact = true;
-						if(isAttacker())
-						{
+						if(isAttacker()){
 							Assault.atterShieldPowerArtefacts += quantity;
-						}
-						else
-						{
+						}else{
 							Assault.defenderShieldPowerArtefacts += quantity;
 						}
 						break;
 
 					case Assault.UNIT_BATTLE_ATTACK_POWER:
 						isBattleArtefact = true;
-						if(isAttacker())
-						{
+						if(isAttacker()){
 							Assault.atterAttackPowerArtefacts += quantity;
-						}
-						else
-						{
+						}else{
 							Assault.defenderAttackPowerArtefacts += quantity;
+						}
+						break;
+
+					case Assault.UNIT_BATTLE_SHELL_POWER_10:
+						isBattleArtefact = true;
+						if(isAttacker()){
+							Assault.atterShellPower10Artefacts += quantity;
+						}else{
+							Assault.defenderShellPower10Artefacts += quantity;
+						}
+						break;
+
+					case Assault.UNIT_BATTLE_SHIELD_POWER_10:
+						isBattleArtefact = true;
+						if(isAttacker()){
+							Assault.atterShieldPower10Artefacts += quantity;
+						}else{
+							Assault.defenderShieldPower10Artefacts += quantity;
+						}
+						break;
+
+					case Assault.UNIT_BATTLE_ATTACK_POWER_10:
+						isBattleArtefact = true;
+						if(isAttacker()){
+							Assault.atterAttackPower10Artefacts += quantity;
+						}else{
+							Assault.defenderAttackPower10Artefacts += quantity;
 						}
 						break;
 
 					case Assault.UNIT_BATTLE_NEUTRON_AFFECTOR:
 						isBattleArtefact = true;
-						if(isAttacker())
-						{
+						if(isAttacker()){
 							Assault.atterNeutronAffectorArtefacts += quantity;
-						}
-						else
-						{
+						}else{
 							Assault.defenderNeutronAffectorArtefacts += quantity;
 						}
 						break;

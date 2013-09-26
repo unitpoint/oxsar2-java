@@ -83,6 +83,9 @@ public class Assault
 	static final int UNIT_BATTLE_SHELL_POWER = 316; // mode - 6
 	static final int UNIT_BATTLE_SHIELD_POWER = 317; // mode - 6
 	static final int UNIT_BATTLE_ATTACK_POWER = 318; // mode - 6
+	static final int UNIT_BATTLE_SHELL_POWER_10 = 359; // mode - 6
+	static final int UNIT_BATTLE_SHIELD_POWER_10 = 360; // mode - 6
+	static final int UNIT_BATTLE_ATTACK_POWER_10 = 361; // mode - 6
 	static final int UNIT_BATTLE_NEUTRON_AFFECTOR = 356; // mode - 6
 
 	static final int UNIT_SUMMARY = 1000;
@@ -141,6 +144,15 @@ public class Assault
 
 	public static int atterAttackPowerArtefacts = 0;
 	public static int defenderAttackPowerArtefacts = 0;
+
+	public static int atterShellPower10Artefacts = 0;
+	public static int defenderShellPower10Artefacts = 0;
+
+	public static int atterShieldPower10Artefacts = 0;
+	public static int defenderShieldPower10Artefacts = 0;
+
+	public static int atterAttackPower10Artefacts = 0;
+	public static int defenderAttackPower10Artefacts = 0;
 
 	public static int atterNeutronAffectorArtefacts = 0;
 	public static int defenderNeutronAffectorArtefacts = 0;
@@ -904,6 +916,9 @@ public class Assault
 				// 2*((100-2)^0,45) = 15,7427909962
 				// 2*((200-2)^0,45) = 21,60375936825
 				chance = clampVal(2 * Math.pow(deathStarsNumber - minDeathStarsNumber + 1, 0.45), 0, 20);
+                /* if(chance < 5){
+                    chance = 0;
+                } */
 			}
 			if(chance > 0 && randDouble(1, 100) <= chance)
 			{
