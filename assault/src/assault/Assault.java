@@ -98,16 +98,18 @@ public class Assault {
 
     static final int RES_UPDATE_ATTACKER = 24;
 
-    static final boolean USE_OGAME_RAPIDFIRE_STYLE = false;
+    // static final boolean USE_OGAME_RAPIDFIRE_STYLE = false;
 
     static final int BATTLE_MAX_TURNS = 6;
 
+    /*
     static final double[] ADV_TECH_FACTOR = {1, 1.1, 1.2};
     static final double[][] ADV_TECH_MATRIX
             = {
                 {0.75, 2.00, 0.00},
                 {0.00, 1.00, 2.00},
                 {2.00, 0.00, 1.00},};
+    */
 
     public static final int MIN_FREE_CAPACITY = 0;
 
@@ -120,17 +122,14 @@ public class Assault {
     public static String tablePrefix = "na_";
     public static int assaultid = 0;
     public static int moonAllowType = 0;
-    public static boolean isBattleAdvanced = false;
+    // public static boolean isBattleAdvanced = false;
     public static boolean isBattleSimulation = false;
     public static boolean isRocketAttack = false;
-	// public static boolean isRocketAttack = false;
-    // public static int rocketAttackPrimaryTarget = 0;
     public static int planetid = 0;
-    // public static int[][] rapidfire = new int[100][100];
     public static HashMap<Integer, Integer> rapidFireMap = new HashMap<Integer, Integer>();
-    public static HashMap<Integer, FireStat> fireStatMap = new HashMap<Integer, FireStat>();
-    public static List<Unit> freeUnits = new ArrayList<Unit>();
-    public static List<StatUnit> statUnits = new ArrayList<StatUnit>();
+    // public static HashMap<Integer, FireStat> fireStatMap = new HashMap<Integer, FireStat>();
+    // public static List<Unit> freeUnits = new ArrayList<Unit>();
+    // public static List<StatUnit> statUnits = new ArrayList<StatUnit>();
     public static Party party;
     public static int assaultResult;
 
@@ -202,8 +201,8 @@ public class Assault {
     public static StringBuffer frontBuf = new StringBuffer();
     public static StringBuffer ballisticsBuf = new StringBuffer();
     public static StringBuffer maskingBuf = new StringBuffer();
-    public static StringBuffer fireStatBuf = new StringBuffer();
-    public static StringBuffer fireStatRowBuf = new StringBuffer();
+    // public static StringBuffer fireStatBuf = new StringBuffer();
+    // public static StringBuffer fireStatRowBuf = new StringBuffer();
 
     public static double atterLostMetal = 0;
     public static double atterLostSilicon = 0;
@@ -268,6 +267,7 @@ public class Assault {
         return 0;
     }
 
+    /*
     public static void addStatUnit(int unitid, String name) {
         for (StatUnit unit : statUnits) {
             if (unit.unitid == unitid) {
@@ -304,6 +304,7 @@ public class Assault {
     public static void resetFireStats() {
         fireStatMap.clear();
     }
+    */
 
     private static String parseArg(String s) {
         if (s.length() >= 2 && (s.charAt(0) == '\'' || s.charAt(0) == '"')
@@ -342,18 +343,12 @@ public class Assault {
             isBattleSimulation = tablePrefix.indexOf("sim_") >= 0;
         }
 
-		// Assault configuration
-        // defenseIntoDebris = false;
-        // bulkIntoDebris[3] = 0.3; // Fleet
-        // bulkIntoDebris[4] = 0.01; // Defense
-        // defenseRepairMin = 0.6;
-        // defenseRepairMax = 0.8;
         // Random key to protect the access
         key = generateKey(4);
         key2 = generateKey(4);
 
-        addStatUnit(UNIT_SUMMARY, "UNIT_SUMMARY");
-        addStatUnit(UNIT_NOTHING, "UNIT_NOTHING");
+        // addStatUnit(UNIT_SUMMARY, "UNIT_SUMMARY");
+        // addStatUnit(UNIT_NOTHING, "UNIT_NOTHING");
 
         party = new Party(); // Initialize party
 
@@ -403,7 +398,7 @@ public class Assault {
                 }
                 planetDiameter = rs.getInt("diameter");
                 ismoon = rs.getInt("ismoon") == 1; // || rs.getInt("moonid") > 0) {
-                isBattleAdvanced = rs.getInt("advanced_system") == 1;
+                // isBattleAdvanced = rs.getInt("advanced_system") == 1;
                 moonAllowType = rs.getInt("moon_allow_type");
 
                 targetMoon = ismoon && rs.getInt("target_moon") == 1;
@@ -788,9 +783,11 @@ public class Assault {
                 startBattleAtterPower = attackerPower;
                 startBattleDefenderPower = defenderPower;
             }
+            /*
             assaultReportBuf.append("{battle_matrix_turn_" + turn + "}");
             assaultReportBuf.append(fireStatBuf);
             assaultReportBuf.append("{/battle_matrix_turn_" + turn + "}");
+            */
 
             // Check if attacker or defender has still fleet to battle
             boolean atterNoUnits = !party.atterHasUnits();
@@ -859,7 +856,7 @@ public class Assault {
             for (Participant participant : party.getAttackers()) {
                 Units units = participant.getUnits(UNIT_DEATH_STAR);
                 if (units != null) {
-                    deathStarsNumber += units.getQuantity();
+                    deathStarsNumber += units.getStartTurnQuantity();
                 }
             }
             double chance = 0, attackerFleetsExplodeChance = 70;
@@ -876,7 +873,7 @@ public class Assault {
             if (chance > 0 && randDouble(1, 100) <= chance) {
                 for (Participant participant : party.getDefenders()) {
                     for (Units units : participant.getUnits()) {
-                        units.destroyAfterTurnFinished(units.getQuantity());
+                        units.destroyAfterTurnFinished(units.getStartTurnQuantity());
                     }
                 }
                 targetDestroyed = true;
@@ -886,7 +883,7 @@ public class Assault {
             } else if (randDouble(1, 100) <= attackerFleetsExplodeChance) {
                 for (Participant participant : party.getAttackers()) {
                     for (Units units : participant.getUnits()) {
-                        units.destroyAfterTurnFinished(units.getQuantity());
+                        units.destroyAfterTurnFinished(units.getStartTurnQuantity());
                     }
                 }
                 assaultResult = 2;
@@ -929,8 +926,8 @@ public class Assault {
                 List<Units> unitsList = new ArrayList<Units>();
                 for (Participant participant : party.getAttackers()) {
                     Units units = participant.getUnits(UNIT_DEATH_STAR);
-                    if (units != null && units.getQuantity() > 0) {
-                        deathStarsNumber += units.getQuantity();
+                    if (units != null && units.getStartTurnQuantity() > 0) {
+                        deathStarsNumber += units.getStartTurnQuantity();
                         unitsList.add(units);
                     }
                 }
@@ -962,7 +959,7 @@ public class Assault {
                 double deathStarsDestroyChance = 100 - clampVal(targetDestroyChance * 4, 50, 90);
                 for (Units units : unitsList) {
                     int destroyed = 0;
-                    for (int i = 0; i < units.getQuantity(); i++) {
+                    for (int i = 0; i < units.getStartTurnQuantity(); i++) {
                         if (randDouble(1, 100) <= deathStarsDestroyChance) {
                             destroyed++;
                         }
@@ -1068,6 +1065,9 @@ public class Assault {
                 assaultReportBuf.append(gunsBuf);
                 assaultReportBuf.append(shieldsBuf);
                 assaultReportBuf.append(shellsBuf);
+                assaultReportBuf.append(frontBuf);
+                // assaultReportBuf.append(ballisticsBuf);
+                // assaultReportBuf.append(maskingBuf);
                 assaultReportBuf.append(assaultQuantityBuf);
 
                 assaultReportBuf.append("</tr></table><br />\n");
@@ -1109,6 +1109,9 @@ public class Assault {
                 assaultReportBuf.append(gunsBuf);
                 assaultReportBuf.append(shieldsBuf);
                 assaultReportBuf.append(shellsBuf);
+                assaultReportBuf.append(frontBuf);
+                // assaultReportBuf.append(ballisticsBuf);
+                // assaultReportBuf.append(maskingBuf);
                 assaultReportBuf.append(assaultQuantityBuf);
 
                 assaultReportBuf.append("</tr></table><br />\n");
@@ -1413,7 +1416,7 @@ public class Assault {
                     assaultReportBuf.append(", ");
                 }
                 assaultReportBuf.append("{lang}" + units.getName() + "{/lang}: "
-                        + decFormatter.format(units.getQuantity()));
+                        + decFormatter.format(units.getStartTurnQuantity()));
             }
             assaultReportBuf.append("<br />\n");
         }
@@ -1462,7 +1465,7 @@ public class Assault {
                 getStringAutoValue(participant.getMaskingLevel())));
         printAddTech(participant.getMaskingAddLevel(), false);
 
-        if (isBattleAdvanced) {
+        /* if (isBattleAdvanced) {
             assaultReportBuf.append(String.format("<br />\n{lang}LASER_TECH{/lang}: %d ",
                     participant.getLaserLevel()));
             printAddTech(participant.getLaserAddLevel(), false);
@@ -1488,7 +1491,7 @@ public class Assault {
                     participant.getShieldFactor(1) * 100.0,
                     participant.getShieldFactor(2) * 100.0
             ));
-        }
+        } */
 
         assaultReportBuf.append("<br />\n");
     }
@@ -1507,13 +1510,13 @@ public class Assault {
 
         for (Units units : participant.getUnits()) {
             updateAssault("[makeParticipantTurn] unitid: " + units.getUnitid());
-            if (units.getQuantity() > 0 || units.getQuantityDiff() < 0) {
+            if (units.getStartTurnQuantity() > 0 || units.getStartTurnQuantityDiff() < 0) {
                 assaultReportBuf.append("<th>{lang}" + units.getName()
                         + "{/lang}</th>");
 
                 int grasped = units.getTotalGrasped();
-                int quantity = units.getQuantity();
-                int diff = units.getQuantityDiff() - grasped;
+                int quantity = units.getStartTurnQuantity();
+                int diff = units.getStartTurnQuantityDiff() - grasped;
 
                 boolean quantityShown = false;
                 // boolean diffShown = false;
@@ -1548,25 +1551,25 @@ public class Assault {
                     quantityBuf.append("</span>");
                 }
 
-                if (units.getDamaged() > 0) {
-                    String spanClass = units.getDamagedShellPercent() <= 70 ? "rep_quantity_damage"
+                if (units.getStartTurnDamaged() > 0) {
+                    String spanClass = units.getStartTurnDamagedShellPercent() <= 70 ? "rep_quantity_damage"
                             : "rep_quantity_damage_low";
                     quantityBuf
                             .append("<br /><span class='" + spanClass + "'>");
-                    if (units.getDamaged() != quantity) {
+                    if (units.getStartTurnDamaged() != quantity) {
                         quantityBuf.append(decFormatter.format(units
-                                .getDamaged())
+                                .getStartTurnDamaged())
                                 + " - ");
                     }
-                    quantityBuf.append(units.getDamagedShellPercent());
+                    quantityBuf.append(units.getStartTurnDamagedShellPercent());
                     quantityBuf.append("%</span>");
                 }
                 quantityBuf.append("</td>");
 
                 if (units.getUnitid() != UNIT_INTERCEPTOR_ROCKET) {
-                    if (!isBattleAdvanced) {
-                        gunsBuf.append("<td>" + decFormatter.format(units.getBaseAttack()));
-                    } else {
+                    // if (!isBattleAdvanced) {
+                        gunsBuf.append("<td>" + decFormatter.format(units.getAttack()));
+                    /* } else {
                         gunsBuf.append("<td>");
                         if (turn == 1) // || turn < 0)
                         {
@@ -1576,17 +1579,17 @@ public class Assault {
                                     decFormatter.format(units.getAttack2())
                             ));
                         }
-                        gunsBuf.append("<span class='rep_quantity_damage_low'>(" + decFormatter.format(units.getBaseAttack()) + ")</span>");
-                    }
+                        gunsBuf.append("<span class='rep_quantity_damage_low'>(" + decFormatter.format(units.getAttack()) + ")</span>");
+                    } */
                     gunsBuf.append("</td>");
                 } else {
                     gunsBuf.append("<td>-</td>");
                 }
 
                 if (units.getUnitid() != UNIT_INTERCEPTOR_ROCKET && units.getUnitid() != UNIT_INTERPLANETARY_ROCKET) {
-                    if (!isBattleAdvanced) {
-                        shieldsBuf.append("<td>" + decFormatter.format(units.getBaseShield()));
-                    } else {
+                    // if (!isBattleAdvanced) {
+                        shieldsBuf.append("<td>" + decFormatter.format(units.getShield()));
+                    /* } else {
                         shieldsBuf.append("<td>");
                         if (turn == 1) // || turn < 0)
                         {
@@ -1596,8 +1599,8 @@ public class Assault {
                                     decFormatter.format(units.getShield2())
                             ));
                         }
-                        shieldsBuf.append("<span class='rep_quantity_damage_low'>(" + decFormatter.format(units.getBaseShield()) + ")</span>");
-                    }
+                        shieldsBuf.append("<span class='rep_quantity_damage_low'>(" + decFormatter.format(units.getShield()) + ")</span>");
+                    } */
                     shieldsBuf.append("</td>");
 
                     shellsBuf.append("<td>" + decFormatter.format(units.getShell()) + "</td>");
@@ -1635,7 +1638,7 @@ public class Assault {
                 }
 
                 if (units.getStartBattleQuantity() > 0) {
-                    int alivePercent = Math.min(100, (int) (units.getQuantity() * 100.0 / units.getStartBattleQuantity()));
+                    int alivePercent = Math.min(100, (int) (units.getStartTurnQuantity() * 100.0 / units.getStartBattleQuantity()));
                     assaultQuantityBuf.append("<td>"
                             + "<div class='rep_destroyed_back_div'>"
                             + "<div class='rep_alive_over_div' style='width: " + alivePercent + "%' />"
@@ -1646,31 +1649,14 @@ public class Assault {
             }
         }
         if (minFront == maxFront) {
-            frontBuf.setLength(0);
+            // frontBuf.setLength(0);
         }
-        if (maxBallistics == 0) // minBallistics == maxBallistics)
-        {
+        if (maxBallistics == 0) { // minBallistics == maxBallistics)
             ballisticsBuf.setLength(0);
         }
-        if (maxMasking == 0) // minMasking == maxMasking)
-        {
+        if (maxMasking == 0) { // minMasking == maxMasking)
             maskingBuf.setLength(0);
         }
-    }
-
-    public static Unit newUnit(int shield1, int shield2, int shield3, int shell) {
-        if (freeUnits.size() > 0) {
-            Unit unit = freeUnits.remove(freeUnits.size() - 1);
-			// unit.shield = shield;
-            // unit.shell = shell;
-            unit.Init(shield1, shield2, shield3, shell);
-            return unit;
-        }
-        return new Unit(shield1, shield2, shield3, shell);
-    }
-
-    public static void freeUnit(Unit unit) {
-        freeUnits.add(unit);
     }
 
     public static boolean canShootAgain(Units units, Units target) {
