@@ -448,7 +448,6 @@ public class Party {
 
         int unitid = units.getUnitid();
         
-        double remainQuantity = quantity;
         UnitsList activeUnitsList = defenderSide.activeUnits;
         if(unitid == Assault.UNIT_INTERPLANETARY_ROCKET){
             activeUnitsList = defenderSide.activeDefenseUnits;
@@ -470,30 +469,16 @@ public class Party {
             }
         }
         
+        int remainQuantity = quantity;
         double defenderActiveUnitsWeight = activeUnitsList.weight;
         for(Units targetUnits: activeUnitsList){
             if(remainQuantity < 1){
                 break;
             }
-            double attackQuantity = Math.round(quantity * targetUnits.getStartTurnWeight() / defenderActiveUnitsWeight);
-            if(attackQuantity > remainQuantity){
-                attackQuantity = remainQuantity;
-            }
-            
-            double rapidFire = Math.max(1, Assault.getRapidFire(unitid, targetUnits.getUnitid()));
-            double shotsNumber = rapidFire * attackQuantity;
-            
-            if (isAttacker) {
-                Assault.attackerShots += shotsNumber;
-                Assault.attackerPower += attack * shotsNumber;
-            } else {
-                Assault.defenderShots += shotsNumber;
-                Assault.defenderPower += attack * shotsNumber;
-            }
-
-            // targetUnits.processDamage(units); // unitid, units.getAttack(), attackMissFactor);
-            double remainShots = units.processAttack(targetUnits, shotsNumber);
-            remainQuantity += remainShots / rapidFire - attackQuantity;
+            int attackQuantity = (int)Math.round(quantity * targetUnits.getStartTurnWeight() / defenderActiveUnitsWeight);
+            attackQuantity = Assault.clampVal(attackQuantity, 1, remainQuantity);
+            remainQuantity -= attackQuantity;
+            remainQuantity += units.processAttack(targetUnits, attackQuantity);
         }
         
         if(primaryActiveUnitsList != null){

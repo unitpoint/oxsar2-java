@@ -1066,8 +1066,8 @@ public class Assault {
                 assaultReportBuf.append(shieldsBuf);
                 assaultReportBuf.append(shellsBuf);
                 assaultReportBuf.append(frontBuf);
-                // assaultReportBuf.append(ballisticsBuf);
-                // assaultReportBuf.append(maskingBuf);
+                assaultReportBuf.append(ballisticsBuf);
+                assaultReportBuf.append(maskingBuf);
                 assaultReportBuf.append(assaultQuantityBuf);
 
                 assaultReportBuf.append("</tr></table><br />\n");
@@ -1110,8 +1110,8 @@ public class Assault {
                 assaultReportBuf.append(shieldsBuf);
                 assaultReportBuf.append(shellsBuf);
                 assaultReportBuf.append(frontBuf);
-                // assaultReportBuf.append(ballisticsBuf);
-                // assaultReportBuf.append(maskingBuf);
+                assaultReportBuf.append(ballisticsBuf);
+                assaultReportBuf.append(maskingBuf);
                 assaultReportBuf.append(assaultQuantityBuf);
 
                 assaultReportBuf.append("</tr></table><br />\n");
@@ -1750,16 +1750,18 @@ public class Assault {
             try {
                 stmt.executeUpdate(sql);
 
-                sql = "INSERT INTO " + tablePrefix + "res_log "
-                        + " (type, planetid, userid, metal, silicon, hydrogen, result_metal, result_silicon, result_hydrogen, ownerid)"
-                        + " SELECT " + RES_UPDATE_ATTACKER + ", planetid, userid, "
-                        + "'" + (targetBuildingMetal - haulMetal) + "', "
-                        + "'" + (targetBuildingSilicon - haulSilicon) + "', "
-                        + "'" + (targetBuildingHydrogen - haulHydrogen) + "', "
-                        + "metal, silicon, hydrogen, '" + assaultid + "' "
-                        + " FROM " + tablePrefix + "planet "
-                        + " WHERE planetid = '" + planetid + "'";
-                stmt.executeUpdate(sql);
+                if(!isBattleSimulation){
+                    sql = "INSERT INTO " + tablePrefix + "res_log "
+                            + " (type, planetid, userid, metal, silicon, hydrogen, result_metal, result_silicon, result_hydrogen, ownerid)"
+                            + " SELECT " + RES_UPDATE_ATTACKER + ", planetid, userid, "
+                            + "'" + (targetBuildingMetal - haulMetal) + "', "
+                            + "'" + (targetBuildingSilicon - haulSilicon) + "', "
+                            + "'" + (targetBuildingHydrogen - haulHydrogen) + "', "
+                            + "metal, silicon, hydrogen, '" + assaultid + "' "
+                            + " FROM " + tablePrefix + "planet "
+                            + " WHERE planetid = '" + planetid + "'";
+                    stmt.executeUpdate(sql);
+                }
 
             } catch (SQLException e) {
                 System.err.println(sql);

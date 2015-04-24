@@ -312,8 +312,23 @@ public class Units {
         } */
     }
 
-    public double processAttack(Units underFireUnits, double shotsNumber) {
+    public int processAttack(Units underFireUnits, int attackQuantity) {
+        int rapidFire = Math.max(1, Assault.getRapidFire(unitid, underFireUnits.getUnitid()));
+        double shotsNumber = rapidFire * attackQuantity;
+
+        System.out.printf("[Units.processAttack] BEGIN pid: %d, uid: %d (%s) => %d (%s)\nq: %d, rf: %d, shots: %.0f, attack: %d\nunderFireUnits.turnShield: %.0f, turnShell: %.0f\n", 
+                participant.getParticipantId(), unitid, name, underFireUnits.unitid, underFireUnits.name,
+                attackQuantity, rapidFire, shotsNumber, getAttack(), underFireUnits.turnShield, underFireUnits.turnShell);
+        
         boolean isBattleAttackerUnderFire = participant.isDefender();
+        if (!isBattleAttackerUnderFire) {
+            Assault.attackerShots += shotsNumber;
+            Assault.attackerPower += attack * shotsNumber;
+        } else {
+            Assault.defenderShots += shotsNumber;
+            Assault.defenderPower += attack * shotsNumber;
+        }
+
         double attack = getAttack();
         if (underFireUnits.startTurnQuantity > 0 && attack > 0 && shotsNumber > 0) {
             double ballistics = getBallisticsLevel();
@@ -335,70 +350,86 @@ public class Units {
             }
             
             if (missedShotsNumber > 0) {
-                /* if (damage <= ignoreDamage) {
-                    returnDamage += damage * missedShotsNumber;
-                    if (isBattleAttackerUnderFire) {
-                        Assault.attackerShield += damage * missedShotsNumber;
-                    } else {
-                        Assault.defenderShield += damage * missedShotsNumber;
-                    }
-                    // Assault.addFireStat(participant.isAttacker(), attackerUnitid, underFireUnits.unitid, 0, false);
-                }else{
-                    
-                } */
+                System.out.printf("missedShotsNumber: %.0f\n", missedShotsNumber);
                 shotsNumber -= missedShotsNumber;
             }
             
-            
-            double fullTurnShield = underFireUnits.startTurnQuantity * underFireUnits.shield;
-            // double fullShellSum = this.startTurnQuantity * this.shell;
+            if(underFireUnits.shield > 0){
+                double fullTurnShield = underFireUnits.startTurnQuantity * underFireUnits.shield;
+                // double fullShellSum = this.startTurnQuantity * this.shell;
 
-            double shieldDamageFactor = underFireUnits.turnShield / fullTurnShield;
-            double shieldDestroyFactor = Math.min(1.0, (1.4 - shieldDamageFactor) * 2.0);
+                double shieldDamageFactor = underFireUnits.turnShield / fullTurnShield;
+                // double shieldDestroyFactor = Math.min(1.0, (1.1 - shieldDamageFactor) * 1.0);
+                double shieldDestroyFactor = Assault.clampVal((1.0 - shieldDamageFactor) * 1.0, 0.01, 1.0);
+                // double shieldDestroyFactor = 1.0 - shieldDamageFactor;
 
-            double shieldDestroy = underFireUnits.turnShield * shieldDestroyFactor;
-            double shieldDestroyUnits = Math.floor(shieldDestroy / underFireUnits.shield);
-            shieldDestroy = shieldDestroyUnits * underFireUnits.shield;
-            shieldDestroyFactor = shieldDestroy / underFireUnits.turnShield;
-            
-            double shieldExistFactor = 1 - shieldDestroyFactor;
-            double shieldExist = underFireUnits.turnShield * shieldExistFactor;
-            
-            double shieldShotsNumber = Math.ceil(shotsNumber * shieldExistFactor);
-            if(shieldShotsNumber > 0){
-                double shieldShotsPower = attack * shieldShotsNumber;
-                if(attack > ignoreAttack){
-                    if(shieldExist >= shieldShotsPower){
+                double shieldDestroy = underFireUnits.turnShield * shieldDestroyFactor;
+                double shieldDestroyUnits = Math.floor(shieldDestroy / underFireUnits.shield);
+                if(shieldDestroyUnits > shotsNumber){
+                    shieldDestroyUnits = shotsNumber;
+                }
+                shieldDestroy = shieldDestroyUnits * underFireUnits.shield;
+                shieldDestroyFactor = shieldDestroy / underFireUnits.turnShield;
+
+                double shieldExistFactor = 1 - shieldDestroyFactor;
+                double shieldExist = underFireUnits.turnShield * shieldExistFactor;
+
+                double shieldShotsNumber = Math.ceil(shotsNumber * shieldExistFactor);
+                if(shieldShotsNumber > 0){
+                    double shieldShotsPower = attack * shieldShotsNumber;
+                    if(attack > ignoreAttack){
+                        double maxShieldShotsPower = shieldShotsNumber * underFireUnits.shield;
+                        if(shieldShotsPower > maxShieldShotsPower){
+                            shieldShotsPower = maxShieldShotsPower;
+                        }
+                        if(shieldShotsPower > shieldExist){
+                            shieldShotsPower = shieldExist;
+                        }
                         underFireUnits.turnShield -= shieldShotsPower;
-                    }else{
-                        underFireUnits.turnShield -= shieldExist;
-                        shieldShotsNumber = Math.ceil(shieldExist / attack);
-                        shieldShotsPower = shieldExist;
+                        shieldShotsNumber = Math.ceil(shieldShotsPower / attack);
+                        /* if(shieldExist >= shieldShotsPower){
+                            underFireUnits.turnShield -= shieldShotsPower;
+                            shieldShotsNumber = Math.ceil(shieldShotsPower / attack);
+                        }else{
+                            underFireUnits.turnShield -= shieldExist;
+                            shieldShotsNumber = Math.ceil(shieldExist / attack);
+                            shieldShotsPower = shieldExist;
+                        } */
                     }
+                    if (isBattleAttackerUnderFire) {
+                        Assault.attackerShield += shieldShotsPower;
+                    } else {
+                        Assault.defenderShield += shieldShotsPower;
+                    }
+                    shotsNumber -= shieldShotsNumber;
+                    System.out.printf("shieldShots: %.0f, underFireUnits.turnShield: %.0f\n", shieldShotsNumber, underFireUnits.turnShield);
                 }
-                if (isBattleAttackerUnderFire) {
-                    Assault.attackerShield += shieldShotsPower;
-                } else {
-                    Assault.defenderShield += shieldShotsPower;
-                }
-                shotsNumber -= shieldShotsNumber;
             }
             
             double shellShotsPower = attack * shotsNumber;
+            double maxShellShotsPower = underFireUnits.shell * shotsNumber;
+            if(shellShotsPower > maxShellShotsPower){
+                shellShotsPower = maxShellShotsPower;
+            }
+            double shellShotsNumber = shotsNumber;
             if(underFireUnits.turnShell < shellShotsPower){
-                double shellShotsNumber = Math.ceil(underFireUnits.turnShell / attack);
-                shotsNumber -= shellShotsNumber;
+                shellShotsNumber = Math.ceil(underFireUnits.turnShell / attack);
                 shellShotsPower = underFireUnits.turnShell;
-            }else{
-                shotsNumber = 0;                
             }
             underFireUnits.turnShell -= shellShotsPower;
+            shotsNumber -= shellShotsNumber;
+            
             if (isBattleAttackerUnderFire) {
                 Assault.attackerShellDestroyed += shellShotsPower;
             } else {
                 Assault.defenderShellDestroyed += shellShotsPower;
             }
-            return shotsNumber;
+            System.out.printf("shellShots: %.0f, underFireUnits.turnShell: %.0f\n", shellShotsNumber, underFireUnits.turnShell);
+            System.out.printf("[Units.processAttack] END pid: %d, uid: %d (%s) => %d (%s), ships shots remain: %.0f\n\n", 
+                    participant.getParticipantId(), unitid, name, underFireUnits.unitid, underFireUnits.name,
+                    shotsNumber / rapidFire);
+            
+            return (int)(shotsNumber / rapidFire);
         }
         return 0;
     }
@@ -460,7 +491,10 @@ public class Units {
 
         double turnQuantity = startTurnQuantity - turnFiredQuantity;
         double turnDamaged = startTurnDamaged;
-        double turnShellPercent = 0;
+        double turnShellPercent = startTurnDamagedShellPercent;
+        
+        System.out.printf("[Units.finishTurn] BEGIN pid: %d, uid: %d (%s), tq: %.0f, td: %.0f, tsp: %.0f\n", 
+                participant.getParticipantId(), unitid, name, turnQuantity, turnDamaged, turnShellPercent);
         
         /* double startTurnShield = startTurnQuantity * shield;
         if(turnShield < startTurnShield){
@@ -470,6 +504,8 @@ public class Units {
         
         if(turnShell < startTurnShell){
             double turnShellDestroyed = startTurnShell - turnShell;
+            System.out.printf("turnShell < startTurnShell (%.0f < %.0f), turnShellDestroyed: %.0f, turnDamaged: %.0f\n",
+                    turnShell, startTurnShell, turnShellDestroyed, turnDamaged);
             if(turnDamaged > 0){
                 double damagedUnitShell = shell * startTurnDamagedShellPercent / 100;
                 double maxDamagedUnitsDestroyed = Math.min(turnDamaged, Math.floor(turnShellDestroyed / damagedUnitShell));
@@ -477,24 +513,33 @@ public class Units {
                 turnQuantity -= damagedUnitsDestroyed;
                 turnDamaged -= damagedUnitsDestroyed;
                 turnShellDestroyed -= damagedUnitsDestroyed * damagedUnitShell;
+                System.out.printf("turnDamaged > 0, max damaged: %.0f, real damaged: %.0f, tq: %.0f, td: %.0f, tsp: %.0f\n",
+                        maxDamagedUnitsDestroyed, damagedUnitsDestroyed, turnQuantity, turnDamaged, turnShellPercent);
             }
             double maxUnitsDestroyed = Math.floor(turnShellDestroyed / shell);
             double unitsDestroyed = Math.ceil(maxUnitsDestroyed * 0.85); // Assault.randInt(maxUnitsDestroyed/2, maxUnitsDestroyed);
             turnQuantity -= unitsDestroyed;
-            double minDamaged = Math.floor((turnShell - turnQuantity * shell) / (shell * 0.1 - shell));
-            double maxDamaged = Math.floor((turnShell - turnQuantity * shell) / (shell * 0.9 - shell));
+            
+            double minDamaged = (turnShellDestroyed - unitsDestroyed * shell) / (shell * 0.99);
+            double maxDamaged = (turnShellDestroyed - unitsDestroyed * shell) / (shell * 0.1);
+            // double minDamaged = Math.floor((turnShell - turnQuantity * shell) / (shell * 0.1 - shell));
+            // double maxDamaged = Math.floor((turnShell - turnQuantity * shell) / (shell * 0.9 - shell));
             minDamaged = Assault.clampVal(minDamaged, turnDamaged, turnQuantity);
             maxDamaged = Assault.clampVal(maxDamaged, minDamaged, turnQuantity);   
             double deltaDamaged = (maxDamaged - minDamaged) * 0.5;
             minDamaged += deltaDamaged * 0.4;
             maxDamaged -= deltaDamaged * 0.4;
             turnDamaged = Math.round(Assault.randDouble(minDamaged, maxDamaged)); // int)((minDamaged + maxDamaged) / 2); // Assault.randInt(minDamaged, maxDamaged);
-            if(turnDamaged == 0 && turnShellDestroyed > 0){
+            if(turnDamaged == 0 && turnShellDestroyed > 0 && turnQuantity > 0){
                 turnDamaged = 1;
             }
             turnShellPercent = turnDamaged > 0 ? (turnShell - (turnQuantity - turnDamaged) * shell) * 100 / (turnDamaged * shell) : 0;
-            if(turnShellPercent < 1 || turnShellPercent > 99){
-                int i = 0;
+            System.out.printf("PRE td: %.0f, tsp: %.0f\n", turnDamaged, turnShellPercent);
+            if(turnShellPercent < 1){
+                turnQuantity -= turnDamaged;
+                turnDamaged = 0;
+            }
+            if(turnShellPercent > 99){
                 turnDamaged = 0;
             }
             if(turnShellPercent == 0 && turnDamaged > 0){
@@ -503,6 +548,7 @@ public class Units {
         }else if(turnShell < 1){
             turnQuantity = turnDamaged = 0;
             turnShellPercent = 0;
+            System.out.printf("turnShell < 1");
         }
         
         startTurnQuantityDiff = (int)turnQuantity - startTurnQuantity;
@@ -526,6 +572,9 @@ public class Units {
         
         // turnAtterQuantity = curQuantity;
         // turnAtterWeight = weight * turnAtterQuantity;
+        
+        System.out.printf("[Units.finishTurn] END pid: %d, uid: %d (%s), tq: %.0f, td: %.0f, tsp: %.0f\n\n", 
+                participant.getParticipantId(), unitid, name, turnQuantity, turnDamaged, turnShellPercent);
     }
 
     public void finish() {
