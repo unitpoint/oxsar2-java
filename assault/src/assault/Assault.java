@@ -991,7 +991,11 @@ public class Assault {
                 && !isRocketAttack
                 && !attackerFleetsExplode
                 && !(targetMoon && targetDestroyed)) {
-            List<Participant> loser = assaultResult == 2 ? party.getAttackers()
+            List<Participant> loser = assaultResult == 2 
+                    ? party.getAttackers()
+                    : party.getDefenders();
+            List<Participant> winner = assaultResult == 1
+                    ? party.getAttackers()
                     : party.getDefenders();
 
             for (Participant participant : loser) {
@@ -1007,12 +1011,36 @@ public class Assault {
 
                         int grasped = (int) (unitsNumber * graspPercent / 100);
                         if (grasped > 0) {
-                            for (int i = 0; i < grasped; i++) {
+                            int remainCaptured = grasped;
+                            
+                            double stepCapturedF = (double)remainCaptured / winner.size();
+                            int stepCaptured = (int)stepCapturedF;
+                            double stepCapturedFrac = stepCapturedF - stepCaptured;
+                            
+                            for(Participant target : winner){
+                                if(remainCaptured < 1){
+                                    break;
+                                }
+                                int curCaptured = stepCaptured;
+                                if(stepCapturedFrac > 0 && Assault.randDouble(0, 1) <= stepCapturedFrac){
+                                    curCaptured++;
+                                }
+                                if(curCaptured > remainCaptured){
+                                    curCaptured = remainCaptured;
+                                }
+                                target.addGraspedUnits(units, curCaptured);
+                                remainCaptured -= curCaptured;
+                            }
+                            if(remainCaptured > 0){
+                                Participant target = winner.get(0);
+                                target.addGraspedUnits(units, remainCaptured);
+                            }
+                            /* for (int i = 0; i < grasped; i++) {
                                 Participant target = assaultResult == 1
                                         ? party.getRandomAtter()
                                         : party.getRandomDefender();
                                 target.addGraspedUnits(units, 1);
-                            }
+                            } */
                             if (graspedUnits.containsKey(units.getName())) {
                                 graspedUnits.put(units.getName(), graspedUnits.get(units.getName()) + grasped);
                             } else {

@@ -250,7 +250,7 @@ public class Units {
         this.startTurnQuantity = quantity;
         this.startTurnDamaged = damaged;
         this.startTurnDamagedShellPercent = damagedShellPercent;
-        this.turnShield = this.startTurnQuantity * this.shield;
+        this.turnShield = (double)this.startTurnQuantity * this.shield;
         this.startTurnShell = this.turnShell = (double)(this.startTurnQuantity - this.startTurnDamaged) * this.shell 
                 + (double)this.startTurnDamaged * this.shell * this.startTurnDamagedShellPercent / 100;
     }
@@ -296,7 +296,7 @@ public class Units {
             attack = (int) Math.round(attack * bonusPower);
         }
 
-        this.turnShield = this.startTurnQuantity * this.shield;
+        this.turnShield = (double)this.startTurnQuantity * this.shield;
         this.startTurnShell = this.turnShell = (double)(this.startTurnQuantity - this.startTurnDamaged) * this.shell 
                 + (double)this.startTurnDamaged * this.shell * this.startTurnDamagedShellPercent / 100;
         
@@ -355,7 +355,7 @@ public class Units {
             }
             
             if(underFireUnits.shield > 0){
-                double fullTurnShield = underFireUnits.startTurnQuantity * underFireUnits.shield;
+                double fullTurnShield = (double)underFireUnits.startTurnQuantity * underFireUnits.shield;
                 // double fullShellSum = this.startTurnQuantity * this.shell;
 
                 double shieldDamageFactor = underFireUnits.turnShield / fullTurnShield;
@@ -379,14 +379,14 @@ public class Units {
                     double shieldShotsPower = attack * shieldShotsNumber;
                     if(attack > ignoreAttack){
                         double maxShieldShotsPower = shieldShotsNumber * underFireUnits.shield;
-                        if(shieldShotsPower > maxShieldShotsPower){
+                        if(shieldShotsPower > maxShieldShotsPower && unitid != Assault.UNIT_INTERPLANETARY_ROCKET){
                             shieldShotsPower = maxShieldShotsPower;
                         }
                         if(shieldShotsPower > shieldExist){
                             shieldShotsPower = shieldExist;
                         }
                         underFireUnits.turnShield -= shieldShotsPower;
-                        shieldShotsNumber = Math.ceil(shieldShotsPower / attack);
+                        shieldShotsNumber = Math.round(shieldShotsPower / attack);
                         /* if(shieldExist >= shieldShotsPower){
                             underFireUnits.turnShield -= shieldShotsPower;
                             shieldShotsNumber = Math.ceil(shieldShotsPower / attack);
@@ -408,7 +408,7 @@ public class Units {
             
             double shellShotsPower = attack * shotsNumber;
             double maxShellShotsPower = underFireUnits.shell * shotsNumber;
-            if(shellShotsPower > maxShellShotsPower){
+            if(shellShotsPower > maxShellShotsPower && unitid != Assault.UNIT_INTERPLANETARY_ROCKET){
                 shellShotsPower = maxShellShotsPower;
             }
             double shellShotsNumber = shotsNumber;
@@ -527,23 +527,24 @@ public class Units {
             minDamaged = Assault.clampVal(minDamaged, turnDamaged, turnQuantity);
             maxDamaged = Assault.clampVal(maxDamaged, minDamaged, turnQuantity);   
             double deltaDamaged = (maxDamaged - minDamaged) * 0.5;
-            minDamaged += deltaDamaged * 0.4;
-            maxDamaged -= deltaDamaged * 0.4;
+            minDamaged += deltaDamaged * 0.45;
+            maxDamaged -= deltaDamaged * 0.45;
             turnDamaged = Math.round(Assault.randDouble(minDamaged, maxDamaged)); // int)((minDamaged + maxDamaged) / 2); // Assault.randInt(minDamaged, maxDamaged);
             if(turnDamaged == 0 && turnShellDestroyed > 0 && turnQuantity > 0){
                 turnDamaged = 1;
             }
             turnShellPercent = turnDamaged > 0 ? (turnShell - (turnQuantity - turnDamaged) * shell) * 100 / (turnDamaged * shell) : 0;
             System.out.printf("PRE td: %.0f, tsp: %.0f\n", turnDamaged, turnShellPercent);
-            if(turnShellPercent < 1){
+            if(turnShellPercent < 20){
                 turnQuantity -= turnDamaged;
                 turnDamaged = 0;
-            }
-            if(turnShellPercent > 99){
+            }else if(turnShellPercent < 65){
+                double explodingChance = 1 - turnShellPercent / 100;
+                double explodingUnits = Math.ceil(turnDamaged * explodingChance);
+                turnQuantity -= explodingUnits;
+                turnDamaged -= explodingUnits;
+            }else if(turnShellPercent > 99){
                 turnDamaged = 0;
-            }
-            if(turnShellPercent == 0 && turnDamaged > 0){
-                int i = 0;
             }
         }else if(turnShell < 1){
             turnQuantity = turnDamaged = 0;
@@ -566,7 +567,7 @@ public class Units {
         startTurnDamagedShellPercent = turnShellPercent;
         
         turnFiredQuantity = 0;
-        this.turnShield = this.startTurnQuantity * this.shield;
+        this.turnShield = (double)this.startTurnQuantity * this.shield;
         this.startTurnShell = this.turnShell = (double)(this.startTurnQuantity - this.startTurnDamaged) * this.shell 
                 + (double)this.startTurnDamaged * this.shell * this.startTurnDamagedShellPercent / 100;
         
