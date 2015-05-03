@@ -516,7 +516,7 @@ public class Units {
                 System.out.printf("turnDamaged > 0, max damaged: %.0f, real damaged: %.0f, tq: %.0f, td: %.0f, tsp: %.0f\n",
                         maxDamagedUnitsDestroyed, damagedUnitsDestroyed, turnQuantity, turnDamaged, turnShellPercent);
             }
-            double maxUnitsDestroyed = Math.floor(turnShellDestroyed / shell);
+            double maxUnitsDestroyed = Math.min(turnQuantity, Math.floor(turnShellDestroyed / shell));
             double unitsDestroyed = Math.ceil(maxUnitsDestroyed * 0.85); // Assault.randInt(maxUnitsDestroyed/2, maxUnitsDestroyed);
             turnQuantity -= unitsDestroyed;
             
@@ -527,20 +527,37 @@ public class Units {
             minDamaged = Assault.clampVal(minDamaged, turnDamaged, turnQuantity);
             maxDamaged = Assault.clampVal(maxDamaged, minDamaged, turnQuantity);   
             double deltaDamaged = (maxDamaged - minDamaged) * 0.5;
-            minDamaged += deltaDamaged * 0.45;
-            maxDamaged -= deltaDamaged * 0.45;
+            minDamaged += deltaDamaged * 0.49;
+            maxDamaged -= deltaDamaged * 0.49;
             turnDamaged = Math.round(Assault.randDouble(minDamaged, maxDamaged)); // int)((minDamaged + maxDamaged) / 2); // Assault.randInt(minDamaged, maxDamaged);
             if(turnDamaged == 0 && turnShellDestroyed > 0 && turnQuantity > 0){
                 turnDamaged = 1;
             }
             turnShellPercent = turnDamaged > 0 ? (turnShell - (turnQuantity - turnDamaged) * shell) * 100 / (turnDamaged * shell) : 0;
-            System.out.printf("PRE td: %.0f, tsp: %.0f\n", turnDamaged, turnShellPercent);
+            
+            double remainTurnShellDestroyed = turnShellDestroyed - (maxUnitsDestroyed - unitsDestroyed) * shell;
+            if(remainTurnShellDestroyed < 0){
+                remainTurnShellDestroyed = 0;
+            }
+            boolean accurateExploding = true;
+            if(accurateExploding){
+                maxUnitsDestroyed = Math.ceil(remainTurnShellDestroyed / (shell * Assault.clampVal(turnShellPercent, 1, 99) / 100));
+                if(maxUnitsDestroyed > turnDamaged){
+                    maxUnitsDestroyed = turnDamaged;
+                }
+            }else{
+                maxUnitsDestroyed = turnDamaged;
+            }
+            
+            System.out.printf("PRE td: %.0f, tsp: %.0f, rtsd: %.0f, mud: %.0f\n", turnDamaged, turnShellPercent, remainTurnShellDestroyed, maxUnitsDestroyed);
+            
             if(turnShellPercent < 20){
-                turnQuantity -= turnDamaged;
-                turnDamaged = 0;
+                double explodingUnits = maxUnitsDestroyed;
+                turnQuantity -= explodingUnits;
+                turnDamaged -= explodingUnits;
             }else if(turnShellPercent < 65){
                 double explodingChance = 1 - turnShellPercent / 100;
-                double explodingUnits = Math.ceil(turnDamaged * explodingChance);
+                double explodingUnits = Math.ceil(maxUnitsDestroyed * explodingChance);
                 turnQuantity -= explodingUnits;
                 turnDamaged -= explodingUnits;
             }else if(turnShellPercent > 99){

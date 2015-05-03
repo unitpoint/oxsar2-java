@@ -1865,6 +1865,7 @@ public class Assault {
     }
 
     public static String formatPower(double i, double sum) {
+        if(i < 0) i = 0;
         return decFormatter.format(i) + (sum > 0 ? " <sup><span class='rep_quantity_damage_low'>" + Math.round(i * 100 / sum) + "%</span></sup>" : "");
     }
 
